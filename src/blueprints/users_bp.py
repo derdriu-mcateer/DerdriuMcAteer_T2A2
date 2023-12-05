@@ -38,3 +38,17 @@ def user_register():
 
     return UserSchema(exclude=["password"]).dump(user), 201
 
+
+# Delete Educator by ID
+@users_bp.route("/<int:id>", methods=["DELETE"])
+@jwt_required()
+def delete_user(id):
+    admin_required()
+    stmt = db.select(User).where(User.id == id)
+    user = db.session.scalar(stmt)
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return {"success": "User deleted"}, 200
+    else: 
+        return {"error": "User not found"}, 404

@@ -42,6 +42,20 @@ def educator_register():
 
     return EducatorSchema(exclude=["password"]).dump(educator), 201
 
+# Delete Educator by ID
+@educators_bp.route("/<int:id>", methods=["DELETE"])
+@jwt_required()
+def delete_educator(id):
+    admin_required()
+    stmt = db.select(Educator).where(Educator.id == id)
+    educator = db.session.scalar(stmt)
+    if educator:
+        db.session.delete(educator)
+        db.session.commit()
+        return {"success": "Educator deleted"}, 200
+    else: 
+        return {"error": "Educator not found"}, 404
+
 
 
 

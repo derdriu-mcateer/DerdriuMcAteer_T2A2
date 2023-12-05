@@ -7,16 +7,21 @@ from datetime import date
 
 db_commands = Blueprint('db', __name__)
 
+# db create will drop all existing tables and create new database tables based on defined models
 @db_commands.cli.command("create")
 def create_db():
+    # Drop existing database tables
+    db.drop_all()
+    # Create new database tables
     db.create_all()
-    print("Tables created")
+    print("Success: Tables created")
 
+# db seed will add data into the database tables
 @db_commands.cli.command("seed")
 def seed_db():
     
+    # create instances of courses
     courses = [
-# Example instances of the Course model focusing on personal development
         Course(
             title="Mindfulness Meditation",
             description="Learn mindfulness techniques for stress relief and mental well-being.",
@@ -58,10 +63,11 @@ def seed_db():
             duration="2 hours",
             capacity=20
         )
-
     ]
+    # add all instances of courses to the session 
     db.session.add_all(courses)
 
+    # create instances of educators
     educators = [
         Educator(
             email="educator1@example.com",
@@ -108,8 +114,10 @@ def seed_db():
             is_admin=False
         )
     ]
+    # add all instances of educators to the session 
     db.session.add_all(educators)
 
+    # create instances of users
     users = [
         User(
             email="user1@example.com",
@@ -159,12 +167,9 @@ def seed_db():
             phone_number="7779991110"
         )
     ]
+    # add all instances of users to the session 
     db.session.add_all(users)
     
+    # commit all sessions to the database
     db.session.commit()
-    print("Table seeded")
-
-@db_commands.cli.command("drop")
-def drop_db():
-    db.drop_all()
-    print("Tables dropped")
+    print("Success: Table seeded")
