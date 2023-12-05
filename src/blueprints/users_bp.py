@@ -2,6 +2,7 @@ from setup import db, bcrypt
 from models.user import User, UserSchema
 from flask import request, Blueprint
 from flask_jwt_extended import jwt_required
+from blueprints.login_bp import admin_required
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 

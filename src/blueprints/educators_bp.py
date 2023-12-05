@@ -1,5 +1,6 @@
 from setup import db, bcrypt
 from models.educator import Educator, EducatorSchema
+from blueprints.login_bp import admin_required
 from flask import request, Blueprint
 from flask_jwt_extended import jwt_required
 
@@ -27,7 +28,9 @@ def single_educator(id):
 
 # Register new Educator
 @educators_bp.route("/register", methods=["POST"])
+@jwt_required()
 def educator_register():
+    admin_required()
     educator_fields = EducatorSchema().load(request.json)
     educator = Educator(
         email = educator_fields["email"],
