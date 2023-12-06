@@ -17,7 +17,7 @@ def get_all_educators():
     # execture the stmt to retrieve scalar educators and return them as a list
     educators = db.session.scalars(stmt).all()
     # return EducatorScehma with educators converted to JSON format
-    return EducatorSchema(many=True).dump(educators)
+    return EducatorSchema(many=True, exclude=["password"]).dump(educators)
 
 # View Educator by ID (admin auth required)
 @educators_bp.route("/<int:id>", methods=["GET"])
@@ -28,7 +28,7 @@ def single_educator(id):
     stmt = db.select(Educator).where(Educator.id == id)
     educator = db.session.scalar(stmt)
     if educator:
-        return EducatorSchema().dump(educator)
+        return EducatorSchema(exclude=["password"]).dump(educator)
     else:
         return {"error": "Educator not found"}, 404
 

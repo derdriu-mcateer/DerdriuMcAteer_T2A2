@@ -3,6 +3,7 @@ from flask import Blueprint
 from models.course import Course
 from models.educator import Educator
 from models.user import User
+from models.user_course import UserCourse
 from datetime import date
 
 db_commands = Blueprint('db', __name__)
@@ -173,9 +174,16 @@ def seed_db():
             phone_number="7779991110"
         )
     ]
-    # add all instances of users to the session 
     db.session.add_all(users)
-    
-    # commit all sessions to the database
+    db.session.commit()
+
+    user_course =[ 
+        UserCourse(
+            course_id = courses[0].id,
+            user_id = users[1].id
+        )
+    ]
+
+    db.session.add_all(user_course)
     db.session.commit()
     print("Success: Table seeded")

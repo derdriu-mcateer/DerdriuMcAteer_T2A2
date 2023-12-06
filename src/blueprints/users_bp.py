@@ -64,3 +64,4 @@ def delete_user(id):
         return {"success": "User deleted"}, 200
     else: 
         return {"error": "User not found"}, 404
+    

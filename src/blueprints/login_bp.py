@@ -26,7 +26,7 @@ def login():
             token = create_access_token(identity = str(educator.email), expires_delta=timedelta(hours=5))
             return {
                 "Success": "Educator Login",
-                "user": EducatorSchema(only=["id","email"]).dump(educator),
+                "Educator": EducatorSchema(only=["email"]).dump(educator),
                 "token": token  
             }
 
@@ -41,7 +41,7 @@ def login():
             token = create_access_token(identity = str(user.email), expires_delta=timedelta(hours=5))
             return {
                 "Success": "User Login",
-                "user": UserSchema(only=["id","email"]).dump(user),
+                "User": UserSchema(only=["email"]).dump(user),
                 "token": token
             }
         return {'error': 'Invalid email address or password'}, 401
