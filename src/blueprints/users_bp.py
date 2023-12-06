@@ -6,18 +6,24 @@ from blueprints.login_bp import admin_required
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
-# View all Users 
+# View all Users (admin auth required)
 @users_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_all_users():
+    admin_required()
+    # select all User instances from class User
     stmt = db.select(User)
+    # execture the stmt to retrieve scalar users and return them as a list
     users = db.session.scalars(stmt).all()
+    # return UserScehma with users converted to JSON format
     return UserSchema(many=True).dump(users)
 
-# View User by ID
+# View User by ID (admin auth required)
 @users_bp.route("/<int:id>", methods=["GET"])
 @jwt_required()
 def single_user(id):
+    admin_required()
+    # retreive the user from class User based on provided id
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
     if user:
@@ -25,21 +31,25 @@ def single_user(id):
     else:
         return {"error": "User not found"}, 404
 
-# Register new User 
+# Register new User (no auth required)
 @users_bp.route("/register", methods=["POST"])
 def user_register():
+    # Load user information from the request (JSON format) using UserSchema
     user_fields = UserSchema().load(request.json)
+    # Create a new User instance from the loaded JSON information
     user = User(
         email = user_fields["email"],
         password = bcrypt.generate_password_hash(user_fields["password"]).decode("utf-8"),
     )
+    # add instance of User to the database session
     db.session.add(user)
+    # Commit session with new instance to the database
     db.session.commit()
-
+    # return new instance of User (excluding password) 
     return UserSchema(exclude=["password"]).dump(user), 201
 
 
-# Delete Educator by ID
+# Delete User by ID (admin auth required)
 @users_bp.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(id):
@@ -47,8 +57,10 @@ def delete_user(id):
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
     if user:
+         # delete the user from the database session
         db.session.delete(user)
         db.session.commit()
+        # commit session to the database
         return {"success": "User deleted"}, 200
     else: 
         return {"error": "User not found"}, 404

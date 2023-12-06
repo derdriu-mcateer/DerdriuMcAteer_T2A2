@@ -19,55 +19,7 @@ def create_db():
 # db seed will add data into the database tables
 @db_commands.cli.command("seed")
 def seed_db():
-    
-    # create instances of courses
-    courses = [
-        Course(
-            title="Mindfulness Meditation",
-            description="Learn mindfulness techniques for stress relief and mental well-being.",
-            duration="3 hours",
-            capacity=50
-        ),
-
-        Course(
-            title="Effective Communication Skills",
-            description="Develop effective communication skills for personal and professional growth.",
-            duration="8 hours",
-            capacity=30
-        ),
-
-        Course(
-            title="Time Management Mastery",
-            description="Master the art of time management and productivity.",
-            duration="2 hours",
-            capacity=40
-        ),
-
-        Course(
-            title="Emotional Intelligence Training",
-            description="Enhance emotional intelligence and self-awareness for better relationships.",
-            duration="6 hours",
-            capacity=25
-        ),
-
-        Course(
-            title="Goal Setting and Achievement",
-            description="Learn strategies to set and achieve personal and professional goals.",
-            duration="6 hours",
-            capacity=35
-        ),
-
-        Course(
-            title="Stress Management Techniques",
-            description="Explore stress management techniques for a balanced lifestyle.",
-            duration="2 hours",
-            capacity=20
-        )
-    ]
-    # add all instances of courses to the session 
-    db.session.add_all(courses)
-
-    # create instances of educators
+        # create instances of educators
     educators = [
         Educator(
             email="educator1@example.com",
@@ -116,6 +68,60 @@ def seed_db():
     ]
     # add all instances of educators to the session 
     db.session.add_all(educators)
+    db.session.commit()
+
+    # create instances of courses
+    courses = [
+        Course(
+            title="Mindfulness Meditation",
+            description="Learn mindfulness techniques for stress relief and mental well-being.",
+            duration="3 hours",
+            capacity=50,
+            educator_id = educators[0].id
+        ),
+
+        Course(
+            title="Effective Communication Skills",
+            description="Develop effective communication skills for personal and professional growth.",
+            duration="8 hours",
+            capacity=30,
+            educator_id = educators[2].id
+        ),
+
+        Course(
+            title="Time Management Mastery",
+            description="Master the art of time management and productivity.",
+            duration="2 hours",
+            capacity=40,
+            educator_id = educators[4].id
+        ),
+
+        Course(
+            title="Emotional Intelligence Training",
+            description="Enhance emotional intelligence and self-awareness for better relationships.",
+            duration="6 hours",
+            capacity=25,
+            educator_id = educators[2].id
+        ),
+
+        Course(
+            title="Goal Setting and Achievement",
+            description="Learn strategies to set and achieve personal and professional goals.",
+            duration="6 hours",
+            capacity=35,
+            educator_id = educators[1].id
+        ),
+
+        Course(
+            title="Stress Management Techniques",
+            description="Explore stress management techniques for a balanced lifestyle.",
+            duration="2 hours",
+            capacity=20,
+            educator_id = educators[0].id
+        )
+    ]
+    # add all instances of courses to the session 
+    db.session.add_all(courses)
 
     # create instances of users
     users = [

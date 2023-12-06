@@ -1,7 +1,7 @@
 from setup import db, ma
-from datetime import datetime
 
 class Educator(db.Model):
+    # define the table name for the database
     __tablename__ = "educators"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -11,7 +11,9 @@ class Educator(db.Model):
     d_o_b = db.Column(db.Date, default="")
     phone_number = db.Column(db.String(), nullable=False, unique=True)
     is_admin = db.Column(db.Boolean(), default=False)
+    courses = db.relationship("Course", back_populates="educator", cascade="all, delete")
 
+# Create the EducatorSchema with marshmallow 
 class EducatorSchema(ma.Schema):
     class Meta:
-        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "is_admin" )
+        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "is_admin")

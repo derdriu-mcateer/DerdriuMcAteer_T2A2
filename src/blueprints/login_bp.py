@@ -10,36 +10,48 @@ from flask import Blueprint
 
 login_bp = Blueprint("logins", __name__, url_prefix="/login")
 
+# Allow users and educators to login 
 @login_bp.route("/", methods=["POST"])
 def login():
-    educator_fields = EducatorSchema(only=["email", "password"]).load(request.json)
-    stmt = db.select(Educator).where(Educator.email == educator_fields['email'])
-    educator = db.session.scalar(stmt)
-    if educator and bcrypt.check_password_hash(educator.password, educator_fields["password"]):
-        token = create_access_token(identity = str(educator.email), expires_delta=timedelta(hours=5))
-        return {
-            "Success": "Educator Login",
-            "user": EducatorSchema(only=["id","email"]).dump(educator),
-            "token": token  
-        }
-    
-    user_fields = UserSchema(only=["email", "password"]).load(request.json)
-    stmt = db.select(User).where(User.email == user_fields['email'])
-    user = db.session.scalar(stmt)
-    if user and bcrypt.check_password_hash(user.password, user_fields["password"]):
-        token = create_access_token(identity = str(user.email), expires_delta=timedelta(hours=5))
-        return {
-            "Success": "User Login",
-            "user": UserSchema(only=["id","email"]).dump(user),
-            "token": token  
-        }
-    else:
-        return {"error": "Invalid email or password"}, 401
-    
+    try:
+        # EDUCATOR LOGIN 
+        # Parse incoming POST data through the schema
+        educator_fields = EducatorSchema(only=["email", "password"]).load(request.json)
+        # Select educator from Educator class where the email matches email parsed in POST body
+        stmt = db.select(Educator).where(Educator.email == educator_fields['email'])
+        educator = db.session.scalar(stmt)
+        # Check the password entered in POST body matches password for educator
+        if educator and bcrypt.check_password_hash(educator.password, educator_fields["password"]):
+            # Create token with email as identity
+            token = create_access_token(identity = str(educator.email), expires_delta=timedelta(hours=5))
+            return {
+                "Success": "Educator Login",
+                "user": EducatorSchema(only=["id","email"]).dump(educator),
+                "token": token  
+            }
+
+        #USER LOGIN
+        user_fields = UserSchema(only=["email", "password"]).load(request.json)
+        # Select user from User class where the email matches email parsed in POST body
+        stmt = db.select(User).where(User.email == user_fields['email'])
+        user = db.session.scalar(stmt)
+        # Check the password entered in POST body matches password for user
+        if user and bcrypt.check_password_hash(user.password, user_fields["password"]):
+            # Create token with email as identity
+            token = create_access_token(identity = str(user.email), expires_delta=timedelta(hours=5))
+            return {
+                "Success": "User Login",
+                "user": UserSchema(only=["id","email"]).dump(user),
+                "token": token
+            }
+        return {'error': 'Invalid email address or password'}, 401
+    except KeyError:
+        return {"error": "Email and passsword are required"}, 400
+
+ 
 def admin_required():
     jwt_educator_id = get_jwt_identity()
     stmt = db.select(Educator).filter_by(email=jwt_educator_id)
     educator = db.session.scalar(stmt)
     if not (educator and educator.is_admin):
         abort(401)
-    print(jwt_educator_id)
