@@ -1,4 +1,5 @@
 from setup import db, ma
+from marshmallow import fields
 
 class Educator(db.Model):
     # define the table name for the database
@@ -15,5 +16,8 @@ class Educator(db.Model):
 
 # Create the EducatorSchema with marshmallow 
 class EducatorSchema(ma.Schema):
+    courses = fields.Nested("CourseSchema", many=True, only= ("id", "title"))
     class Meta:
-        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "is_admin")
+        ordered = True
+        # fields to expose
+        fields = ("id", "email", "name", "d_o_b", "phone_number", "is_admin", "courses")

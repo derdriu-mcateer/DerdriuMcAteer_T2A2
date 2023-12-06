@@ -16,7 +16,7 @@ def get_all_users():
     # execture the stmt to retrieve scalar users and return them as a list
     users = db.session.scalars(stmt).all()
     # return UserScehma with users converted to JSON format
-    return UserSchema(many=True).dump(users)
+    return UserSchema(many=True,exclude=["password"]).dump(users)
 
 # View User by ID (admin auth required)
 @users_bp.route("/<int:id>", methods=["GET"])

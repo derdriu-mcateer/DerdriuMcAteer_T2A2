@@ -12,6 +12,7 @@ app = Flask(__name__)
 #Set up environment
 app.config["SQLALCHEMY_DATABASE_URI"] = environ.get('DB_URI')
 app.config['JWT_SECRET_KEY'] = environ.get('JWT_SECRET_KEY')
+app.json.sort_keys = False
 
 
 #Initialise

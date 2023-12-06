@@ -1,4 +1,5 @@
 from setup import db, ma
+from marshmallow import fields
 
 # Course class inherits from db.Model allowing it to map objects to corresponding db tables
 class Course(db.Model):
@@ -15,5 +16,8 @@ class Course(db.Model):
 
 # Create the CourseSchema with marshmallow 
 class CourseSchema(ma.Schema):
+    educator = fields.Nested('EducatorSchema', many=True, only=('id', 'name', 'email'))
+
     class Meta:
-        fields = ("id", "title", "description", "duration", "capacity", "educator_id")
+        ordered = True
+        fields = ("id", "title", "description", "duration", "capacity", "educator")

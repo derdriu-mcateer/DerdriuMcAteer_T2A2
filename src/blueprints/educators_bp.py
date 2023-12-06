@@ -28,7 +28,7 @@ def single_educator(id):
     stmt = db.select(Educator).where(Educator.id == id)
     educator = db.session.scalar(stmt)
     if educator:
-        return EducatorSchema(exclude=["password"]).dump(educator)
+        return EducatorSchema().dump(educator)
     else:
         return {"error": "Educator not found"}, 404
 

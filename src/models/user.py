@@ -14,4 +14,5 @@ class User(db.Model):
 # Create the UserSchema with marshmallow 
 class UserSchema(ma.Schema):
     class Meta:
+        ordered = True
         fields = ("id", "email", "password", "name", "d_o_b", "phone_number")
