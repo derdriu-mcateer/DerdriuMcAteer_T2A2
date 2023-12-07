@@ -3,8 +3,9 @@ from flask import Blueprint
 from models.course import Course
 from models.educator import Educator
 from models.user import User
-from models.user_course import UserCourse
+from models.review import Review
 from datetime import date
+from models.enrolment import Enrolment
 
 db_commands = Blueprint('db', __name__)
 
@@ -123,6 +124,7 @@ def seed_db():
     ]
     # add all instances of courses to the session 
     db.session.add_all(courses)
+    db.session.commit()
 
     # create instances of users
     users = [
@@ -131,7 +133,7 @@ def seed_db():
             password=bcrypt.generate_password_hash("password1").decode("utf8"),
             name="Elise Chen",
             d_o_b=date(1990, 5, 15),
-            phone_number="1234567890"
+            phone_number="1234567890",
         ),
 
         User(
@@ -177,13 +179,65 @@ def seed_db():
     db.session.add_all(users)
     db.session.commit()
 
-    user_course =[ 
-        UserCourse(
-            course_id = courses[0].id,
-            user_id = users[1].id
-        )
-    ]
+    enrolments = [
+        Enrolment(
+            course_id = courses[1].id,
+            user_id= users[0].id
+        ),
 
-    db.session.add_all(user_course)
+        Enrolment(
+            course_id = courses[3].id,
+            user_id= users[0].id
+        ),
+
+        Enrolment(
+            course_id = courses[1].id,
+            user_id= users[2].id
+        ),
+
+        Enrolment(
+            course_id = courses[4].id,
+            user_id= users[3].id
+        ),
+
+
+    ]
+    db.session.add_all(enrolments)
     db.session.commit()
+
+    reviews = [
+    Review(
+        description="This course was great",
+        course_id=courses[0].id,
+        user_id=users[0].id
+    ),
+    Review(
+        description="The content was really helpful",
+        course_id=courses[1].id,
+        user_id=users[1].id
+    ),
+    Review(
+        description="Enjoyed the practical exercises",
+        course_id=courses[2].id,
+        user_id=users[2].id
+    ),
+    Review(
+        description="The instructor was fantastic",
+        course_id=courses[3].id,
+        user_id=users[3].id
+    ),
+    Review(
+        description="Highly recommended!",
+        course_id=courses[4].id,
+        user_id=users[4].id
+    ),
+    Review(
+        description="Loved the interactive sessions",
+        course_id=courses[5].id,
+        user_id=users[1].id
+    )
+]
+    db.session.add_all(reviews)
+    db.session.commit()
+
     print("Success: Table seeded")

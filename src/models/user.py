@@ -11,11 +11,17 @@ class User(db.Model):
     d_o_b = db.Column(db.Date, default="")
     phone_number = db.Column(db.String(), nullable=False, unique=True)
 
-    user_course = db.relationship("UserCourse", back_populates="user")
+    enrolments = db.relationship('Enrolment', back_populates='user', cascade='all, delete')
+
+    reviews = db.relationship('Review', back_populates='user', cascade='all, delete')
+
+
+
 
 # Create the UserSchema with marshmallow 
 class UserSchema(ma.Schema):
-    courses = fields.Nested("CourseSchema", exclude=['user', 'id'])
+    reviews = fields.Nested('ReviewSchema', many=True, exclude=['user'])
+    enrolments = fields.Nested('EnrolmentSchema', many=True, only=['course'])
     class Meta:
         ordered = True
-        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "courses")
+        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "enrolments", 'reviews')

@@ -11,6 +11,7 @@ class Educator(db.Model):
     d_o_b = db.Column(db.Date, default="")
     phone_number = db.Column(db.String(), nullable=False, unique=True)
     is_admin = db.Column(db.Boolean(), default=False)
+    
     courses = db.relationship("Course", back_populates="educator", cascade="all, delete")
 
 # Create the EducatorSchema with marshmallow 
