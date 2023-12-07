@@ -3,9 +3,10 @@ from flask import Blueprint
 from models.course import Course
 from models.educator import Educator
 from models.user import User
+from models.enrolment import Enrolment
 from models.review import Review
 from datetime import date
-from models.enrolment import Enrolment
+
 
 db_commands = Blueprint('db', __name__)
 
@@ -176,10 +177,12 @@ def seed_db():
             phone_number="7779991110"
         )
     ]
+    # add all instances of users to the session 
     db.session.add_all(users)
     db.session.commit()
 
     enrolments = [
+        # create instances of enrolments
         Enrolment(
             course_id = courses[1].id,
             user_id= users[0].id
@@ -199,13 +202,13 @@ def seed_db():
             course_id = courses[4].id,
             user_id= users[3].id
         ),
-
-
     ]
+    # add all instances of enrolments to the session 
     db.session.add_all(enrolments)
     db.session.commit()
 
     reviews = [
+        # create instances of reviews
     Review(
         description="This course was great",
         course_id=courses[0].id,
@@ -236,7 +239,8 @@ def seed_db():
         course_id=courses[5].id,
         user_id=users[1].id
     )
-]
+    ]
+    # add all instances of reviews to the session 
     db.session.add_all(reviews)
     db.session.commit()
 

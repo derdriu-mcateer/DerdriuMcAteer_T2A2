@@ -9,10 +9,14 @@ class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text(), nullable=False)
  
+    # Define a column for storing the foreign key referencing the "id" column in the "users" table
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    # Define a relationship with the "User" model, linking "reviews" and "user"
     user = db.relationship("User", back_populates="reviews", cascade="all, delete")
 
+    # Define a column for storing the foreign key referencing the "id" column in the "courses" table
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"),nullable=False)
+     # Define a relationship with the "Educator" model, linking "reviews" and "course"
     course = db.relationship("Course", back_populates="reviews", cascade="all, delete")
     
 

@@ -4,6 +4,7 @@ from marshmallow import fields
 class Educator(db.Model):
     # define the table name for the database
     __tablename__ = "educators"
+    
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
@@ -12,10 +13,12 @@ class Educator(db.Model):
     phone_number = db.Column(db.String(), nullable=False, unique=True)
     is_admin = db.Column(db.Boolean(), default=False)
     
+    # Define a relationship with the "Course" model, linking "educator" and "courses"
     courses = db.relationship("Course", back_populates="educator", cascade="all, delete")
 
 # Create the EducatorSchema with marshmallow 
 class EducatorSchema(ma.Schema):
+    # Nested field for multiple courses
     courses = fields.Nested("CourseSchema", many=True, only= ("id", "title"))
     class Meta:
         ordered = True
