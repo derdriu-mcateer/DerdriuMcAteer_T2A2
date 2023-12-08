@@ -1,6 +1,6 @@
 from setup import db, bcrypt
 from models.educator import Educator, EducatorSchema
-from blueprints.login_bp import admin_required
+from blueprints.auth_bp import admin_required
 from flask import request, Blueprint
 from flask_jwt_extended import jwt_required
 

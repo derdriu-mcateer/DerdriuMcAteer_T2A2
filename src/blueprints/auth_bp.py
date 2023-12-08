@@ -58,15 +58,21 @@ def admin_required():
 
 
 def authorize(identity):
+    # Retrieve the current user's ID from the JWT token
     jwt_id = get_jwt_identity()
 
+    # Query the database to find the JWT ID in tables
     user_query = db.select(User).filter_by(email=jwt_id)
     educator_query = db.select(Educator).filter_by(email=jwt_id)
 
+    # Execute the queries and retrieve the user and educator objects
     user = db.session.scalar(user_query)
     educator = db.session.scalar(educator_query)
 
-    if not ((educator and educator.is_admin) or (user and (user.id == identity))):
+    # Check if is educator and is admin 
+    if not ((educator and educator.is_admin) or 
+            # OR check if user and identity matches user id
+            (user and (user.id == identity))):
         abort(401)
 
 

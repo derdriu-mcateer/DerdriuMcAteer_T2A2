@@ -1,4 +1,5 @@
 from setup import db, ma
+from datetime import datetime
 from marshmallow import fields
 
 # Course class inherits from db.Model allowing it to map objects to corresponding db tables
@@ -8,6 +9,7 @@ class Course(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(), nullable=False)
+    date = db.Column(db.Date, default=datetime.now().strftime('%Y-%m-%d'))
     description = db.Column(db.String(), nullable=False)
     duration = db.Column(db.String(), nullable=False)
     capacity = db.Column(db.Integer, default=1)
@@ -25,7 +27,8 @@ class Course(db.Model):
 
 # Create the CourseSchema with marshmallow 
 class CourseSchema(ma.Schema):
-    educator = fields.Nested("EducatorSchema", only=("id", "name", "email"))
+    educator_id = fields.Integer()
+    educator = fields.Nested("EducatorSchema", only=("name", "email"))
     # Nested field for multiple users
     enrolments = fields.Nested("EnrolmentSchema", many=True, only=["user"])
     # Nested field for multiple reviews
@@ -33,4 +36,4 @@ class CourseSchema(ma.Schema):
 
     class Meta:
         ordered = True
-        fields = ("id", "title",  "description", "duration", "capacity", "educator", "enrolments", "reviews")
+        fields = ("id", "title","date", "description", "duration", "capacity","educator_id", "educator", "enrolments", "reviews")

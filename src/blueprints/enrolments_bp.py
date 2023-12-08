@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 from models.user import User
 from models.course import Course
 from models.enrolment import Enrolment
-from blueprints.login_bp import authorize
+from blueprints.auth_bp import authorize
 
 
 enrolments_bp = Blueprint("enrolments", __name__, url_prefix="/enrolments")

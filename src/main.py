@@ -4,7 +4,7 @@ from blueprints.cli_bp import db_commands
 from blueprints.courses_bp import courses_bp
 from blueprints.educators_bp import educators_bp
 from blueprints.users_bp import users_bp
-from blueprints.login_bp import login_bp
+from blueprints.auth_bp import login_bp
 from blueprints.enrolments_bp import enrolments_bp
 
 app.register_blueprint(db_commands)
