@@ -18,11 +18,11 @@ def get_all_users():
     # return UserScehma with users converted to JSON format
     return UserSchema(many=True,exclude=["password"]).dump(users)
 
-# View User by ID (admin auth required)
+# View User by ID (admin or user auth required)
 @users_bp.route("/<int:id>", methods=["GET"])
 @jwt_required()
 def single_user(id):
-    admin_required()
+    authorize()
     # retreive the user from class User based on provided id
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
@@ -49,13 +49,13 @@ def user_register():
     return UserSchema(exclude=["password"]).dump(user), 201
 
 
-# Delete User by ID (admin auth required)
+# Delete User by ID (admin or user auth required)
 @users_bp.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(id):
-    print(f"Received user ID for deletion: {id}") 
     user = User.query.get(id)  
     if user:
+        authorize(id)
          # delete the user from the database session
         db.session.delete(user)
         db.session.commit()
@@ -64,3 +64,22 @@ def delete_user(id):
     else: 
         return {"error": "User not found"}, 404
     
+# Update User by ID (admin or user auth required)
+@users_bp.route("/<int:id>", methods=["PUT", "PATCH"])
+@jwt_required()
+def update_user(id):
+    # Load user information from the request (JSON format) using UserSchema
+    user_fields = UserSchema().load(request.json)  
+    stmt = db.select(User).where(User.id == id)
+    user = db.session.scalar(stmt)
+    if user:
+        authorize(id)
+        user.email = user_fields.get("email", user.email)
+        user.password = user_fields.get("password", user.password)
+        user.name = user_fields.get("name", user.name)
+        user.phone_number = user_fields.get("phone_number", user.phone_number)
+        db.session.commit()
+        return UserSchema().dump(user)
+    else:
+        return {"error": "User not found"}, 404
+

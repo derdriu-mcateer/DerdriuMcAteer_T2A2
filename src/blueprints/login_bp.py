@@ -68,7 +68,7 @@ def authorize(identity):
 
     if not (
         (educator and educator.is_admin) or 
-        (identity and (jwt_id == identity or user))
+        (identity and (jwt_id == identity or (user and user.id == identity)))
     ):
         abort(401)
 
