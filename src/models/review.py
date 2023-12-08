@@ -22,9 +22,10 @@ class Review(db.Model):
 
 # Create the CourseSchema with marshmallow 
 class ReviewSchema(ma.Schema):
-   user = fields.Nested("UserSchema", only=["id", "name"])
-   course = fields.Nested("CourseSchema", only=["id", "title"])
-   
-   class Meta:
-        ordered = True
+    user = fields.Nested("UserSchema", only=["id", "name"])
+    course = fields.Nested("CourseSchema", only=["id", "title"])
+
+    description = fields.String(required=True)  # Assuming description is a required field
+
+    class Meta:
         fields = ("id", "description", "user", "course")

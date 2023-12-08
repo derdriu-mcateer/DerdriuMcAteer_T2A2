@@ -2,7 +2,7 @@ from setup import db, bcrypt
 from models.user import User, UserSchema
 from flask import request, Blueprint
 from flask_jwt_extended import jwt_required
-from blueprints.auth_bp import admin_required, authorize
+from blueprints.auth_bp import admin_required, admin_or_user
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
@@ -22,7 +22,7 @@ def get_all_users():
 @users_bp.route("/<int:id>", methods=["GET"])
 @jwt_required()
 def single_user(id):
-    authorize(id)
+    admin_or_user(id)
     # retreive the user from class User based on provided id
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
@@ -53,9 +53,9 @@ def user_register():
 @users_bp.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(id):
+    admin_or_user(id)
     user = User.query.get(id)  
     if user:
-        authorize(id)
          # delete the user from the database session
         db.session.delete(user)
         db.session.commit()
@@ -68,12 +68,12 @@ def delete_user(id):
 @users_bp.route("/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user(id):
+    admin_or_user(id)
     # Load user information from the request (JSON format) using UserSchema
     user_fields = UserSchema().load(request.json)  
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
     if user:
-        authorize(id)
         user.email = user_fields.get("email", user.email)
         user.password = user_fields.get("password", user.password)
         user.name = user_fields.get("name", user.name)

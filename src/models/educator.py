@@ -11,7 +11,6 @@ class Educator(db.Model):
     name = db.Column(db.String, nullable=False)
     d_o_b = db.Column(db.Date, default="")
     phone_number = db.Column(db.String(), nullable=False, unique=True)
-    is_admin = db.Column(db.Boolean(), default=False)
     
     # Define a relationship with the "Course" model, linking "educator" and "courses"
     courses = db.relationship("Course", back_populates="educator", cascade="all, delete")
@@ -22,4 +21,4 @@ class EducatorSchema(ma.Schema):
     courses = fields.Nested("CourseSchema", many=True, only= ("id", "title"))
     class Meta:
         ordered = True
-        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "is_admin", "courses")
+        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "", "courses")

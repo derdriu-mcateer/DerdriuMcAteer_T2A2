@@ -10,6 +10,8 @@ class User(db.Model):
     name = db.Column(db.String, nullable=False)
     d_o_b = db.Column(db.Date, default="")
     phone_number = db.Column(db.String(), nullable=False, unique=True)
+    is_admin = db.Column(db.Boolean(), default=False)
+    
 
     # Define a relationship with the "Enrolment" model, linking "user" and "enrolments"
     enrolments = db.relationship("Enrolment", back_populates="user", cascade="all, delete")
@@ -29,4 +31,4 @@ class UserSchema(ma.Schema):
 
     class Meta:
         ordered = True
-        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "enrolments", "reviews")
+        fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "is_admin", "enrolments", "reviews")

@@ -1,6 +1,6 @@
 from setup import db, bcrypt
 from models.educator import Educator, EducatorSchema
-from blueprints.auth_bp import admin_required
+from blueprints.auth_bp import admin_required, admin_or_educator
 from flask import request, Blueprint
 from flask_jwt_extended import jwt_required
 
@@ -23,7 +23,7 @@ def get_all_educators():
 @educators_bp.route("/<int:id>", methods=["GET"])
 @jwt_required()
 def single_educator(id):
-    admin_required()
+    admin_or_educator(id)
     # retreive the educator from class Educator based on provided id
     stmt = db.select(Educator).where(Educator.id == id)
     educator = db.session.scalar(stmt)
@@ -43,7 +43,6 @@ def educator_register():
     educator = Educator(
         email = educator_fields["email"],
         password = bcrypt.generate_password_hash(educator_fields["password"]).decode("utf-8"),
-        is_admin = educator_fields["is_admin"]
     )
     # add instance of Educator to the database session
     db.session.add(educator)

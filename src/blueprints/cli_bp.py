@@ -30,7 +30,7 @@ def seed_db():
             name="Gabriella Ramirez",
             d_o_b=date(1985, 10, 25),
             phone_number="1234567890",
-            is_admin=True
+            
         ),
 
         Educator(
@@ -39,7 +39,7 @@ def seed_db():
             name="Declan Patel",
             d_o_b=date(1978, 7, 15),
             phone_number="9876543210",
-            is_admin=False
+            
         ),
 
         Educator(
@@ -48,7 +48,7 @@ def seed_db():
             name="Emilia Nguyen",
             d_o_b=date(1990, 4, 5),
             phone_number="5551234567",
-            is_admin=False
+            
         ),
 
         Educator(
@@ -57,7 +57,7 @@ def seed_db():
             name="Kaleb Johnston",
             d_o_b=date(1983, 1, 12),
             phone_number="9998887776",
-            is_admin=True
+            
         ),
 
         Educator(
@@ -66,7 +66,7 @@ def seed_db():
             name="Isla Rodriguez",
             d_o_b=date(1995, 12, 30),
             phone_number="4443332221",
-            is_admin=False
+            
         )
     ]
     # add all instances of educators to the session 
@@ -135,6 +135,7 @@ def seed_db():
             name="Elise Chen",
             d_o_b=date(1990, 5, 15),
             phone_number="1234567890",
+            is_admin=True
         ),
 
         User(
@@ -142,7 +143,8 @@ def seed_db():
             password=bcrypt.generate_password_hash("password2").decode("utf8"),
             name="Nico Foster",
             d_o_b=date(1988, 9, 20),
-            phone_number="9876543210"
+            phone_number="9876543210",
+            is_admin=False
         ),
 
         User(
@@ -150,7 +152,8 @@ def seed_db():
             password=bcrypt.generate_password_hash("password3").decode("utf8"),
             name="Asher Martinez",
             d_o_b=date(1995, 3, 8),
-            phone_number="5551234567"
+            phone_number="5551234567",
+            is_admin=True
         ),
 
         User(
@@ -158,7 +161,8 @@ def seed_db():
             password=bcrypt.generate_password_hash("password4").decode("utf8"),
             name="Owen Sullivan",
             d_o_b=date(1983, 7, 12),
-            phone_number="9998887776"
+            phone_number="9998887776",
+            is_admin=False
         ),
 
         User(
@@ -166,7 +170,8 @@ def seed_db():
             password=bcrypt.generate_password_hash("password5").decode("utf8"),
             name="Sophia Lee",
             d_o_b=date(1998, 11, 25),
-            phone_number="4443332221"
+            phone_number="4443332221",
+            is_admin=False
         ),
 
         User(
@@ -174,7 +179,8 @@ def seed_db():
             password=bcrypt.generate_password_hash("password6").decode("utf8"),
             name="Oliver Wilson",
             d_o_b=date(1980, 12, 30),
-            phone_number="7779991110"
+            phone_number="7779991110",
+            is_admin=False
         )
     ]
     # add all instances of users to the session 

@@ -4,7 +4,6 @@ from flask_jwt_extended import jwt_required
 from models.user import User
 from models.course import Course
 from models.enrolment import Enrolment
-from blueprints.auth_bp import authorize
 
 
 enrolments_bp = Blueprint("enrolments", __name__, url_prefix="/enrolments")
@@ -13,7 +12,6 @@ enrolments_bp = Blueprint("enrolments", __name__, url_prefix="/enrolments")
 @enrolments_bp.route("/enrol/<int:course_id>/<int:user_id>", methods=["PUT"])
 @jwt_required()
 def enrol_user(course_id, user_id):
-    authorize(user_id)
     # Check if the user exists and retrieve the user object
     user = User.query.get(user_id)
     if user is None:
@@ -38,7 +36,6 @@ def enrol_user(course_id, user_id):
 @enrolments_bp.route("/unenrol/<int:course_id>/<int:user_id>", methods=["DELETE"])
 @jwt_required()
 def unenrol_user(course_id, user_id):
-    authorize(user_id)
     # Check if the user exists and retrieve the user object
     user = User.query.get(user_id)
     if user is None:
