@@ -22,7 +22,7 @@ def get_all_users():
 @users_bp.route("/<int:id>", methods=["GET"])
 @jwt_required()
 def single_user(id):
-    authorize()
+    authorize(id)
     # retreive the user from class User based on provided id
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
@@ -82,4 +82,3 @@ def update_user(id):
         return UserSchema().dump(user)
     else:
         return {"error": "User not found"}, 404
-
