@@ -15,7 +15,7 @@ class Course(db.Model):
     # Define a column for storing the foreign key referencing the "id" column in the "educators" table
     educator_id = db.Column(db.Integer, db.ForeignKey("educators.id"),nullable=False)
     # Define a relationship with the "Educator" model, linking "courses" and "educators"
-    educator = db.relationship("Educator", back_populates="courses", cascade="all, delete")
+    educator = db.relationship("Educator", back_populates="courses")
 
     # Define a relationship with the "Enrolment" model, linking "course" and "enrolments"
     enrolments = db.relationship("Enrolment", back_populates="course", cascade="all, delete")

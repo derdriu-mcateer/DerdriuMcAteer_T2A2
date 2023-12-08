@@ -55,3 +55,24 @@ def admin_required():
     educator = db.session.scalar(stmt)
     if not (educator and educator.is_admin):
         abort(401)
+
+
+def authorize(identity):
+    jwt_id = get_jwt_identity()
+
+    user_query = db.select(User).filter_by(email=jwt_id)
+    educator_query = db.select(Educator).filter_by(email=jwt_id)
+
+    user = db.session.scalar(user_query)
+    educator = db.session.scalar(educator_query)
+
+    if not (
+        (educator and educator.is_admin) or 
+        (identity and (jwt_id == identity or user))
+    ):
+        abort(401)
+
+
+
+
+

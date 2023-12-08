@@ -1,7 +1,7 @@
 from setup import db
 from flask import Blueprint
 from models.course import Course, CourseSchema
-from blueprints.login_bp import admin_required
+from blueprints.login_bp import admin_required, authorize
 from flask_jwt_extended import jwt_required
 
 

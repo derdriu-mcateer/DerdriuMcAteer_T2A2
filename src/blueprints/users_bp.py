@@ -2,7 +2,7 @@ from setup import db, bcrypt
 from models.user import User, UserSchema
 from flask import request, Blueprint
 from flask_jwt_extended import jwt_required
-from blueprints.login_bp import admin_required
+from blueprints.login_bp import admin_required, authorize
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
@@ -53,9 +53,8 @@ def user_register():
 @users_bp.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(id):
-    admin_required()
-    stmt = db.select(User).where(User.id == id)
-    user = db.session.scalar(stmt)
+    print(f"Received user ID for deletion: {id}") 
+    user = User.query.get(id)  
     if user:
          # delete the user from the database session
         db.session.delete(user)

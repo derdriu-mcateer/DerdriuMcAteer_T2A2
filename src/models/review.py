@@ -12,18 +12,18 @@ class Review(db.Model):
     # Define a column for storing the foreign key referencing the "id" column in the "users" table
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     # Define a relationship with the "User" model, linking "reviews" and "user"
-    user = db.relationship("User", back_populates="reviews", cascade="all, delete")
+    user = db.relationship("User", back_populates="reviews")
 
     # Define a column for storing the foreign key referencing the "id" column in the "courses" table
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"),nullable=False)
      # Define a relationship with the "Educator" model, linking "reviews" and "course"
-    course = db.relationship("Course", back_populates="reviews", cascade="all, delete")
+    course = db.relationship("Course", back_populates="reviews")
     
 
 # Create the CourseSchema with marshmallow 
 class ReviewSchema(ma.Schema):
-   user = fields.Nested('UserSchema', only=['id', 'name'])
-   course = fields.Nested('CourseSchema', only=['id', 'title'])
+   user = fields.Nested("UserSchema", only=["id", "name"])
+   course = fields.Nested("CourseSchema", only=["id", "title"])
    
    class Meta:
         ordered = True
