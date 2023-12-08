@@ -1,22 +1,21 @@
 from setup import db
 from flask import Blueprint
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 from models.user import User
 from models.course import Course
 from models.enrolment import Enrolment
+from blueprints.login_bp import authorize
 
 
 enrolments_bp = Blueprint("enrolments", __name__, url_prefix="/enrolments")
 
 # Enrol User into Course
-@enrolments_bp.route("/enrol/<int:course_id>", methods=["PUT"])
+@enrolments_bp.route("/enrol/<int:course_id>/<int:user_id>", methods=["PUT"])
 @jwt_required()
-def enrol_user(course_id):
-    # Get the current user's ID from the JWT token
-    current_user_email = str(get_jwt_identity())
-
+def enrol_user(course_id, user_id):
+    authorize(user_id)
     # Check if the user exists and retrieve the user object
-    user = User.query.filter_by(email=current_user_email).first()
+    user = User.query.get(user_id)
     if user is None:
         return {"error": "User not found"}, 404
 
@@ -35,14 +34,13 @@ def enrol_user(course_id):
 
     return {"success": "User enrolled in the course"}, 200
 
-@enrolments_bp.route("/unenrol/<int:course_id>", methods=["DELETE"])
+# Unenrol User into Course
+@enrolments_bp.route("/unenrol/<int:course_id>/<int:user_id>", methods=["DELETE"])
 @jwt_required()
-def unenrol_user(course_id):
-    # Get the current user's email from the JWT token
-    current_user_email = str(get_jwt_identity())
-    
+def unenrol_user(course_id, user_id):
+    authorize(user_id)
     # Check if the user exists and retrieve the user object
-    user = User.query.filter_by(email=current_user_email).first()
+    user = User.query.get(user_id)
     if user is None:
         return {"error": "User not found"}, 404
 

@@ -66,12 +66,8 @@ def authorize(identity):
     user = db.session.scalar(user_query)
     educator = db.session.scalar(educator_query)
 
-    if not (
-        (educator and educator.is_admin) or 
-        (identity and (jwt_id == identity or (user and user.id == identity)))
-    ):
+    if not ((educator and educator.is_admin) or (user and (user.id == identity))):
         abort(401)
-
 
 
 
