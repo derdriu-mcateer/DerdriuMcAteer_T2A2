@@ -107,3 +107,4 @@ def update_user_admin_status(id):
             return {"error": "Invalid request. 'is_admin' field not provided."}, 400
     else:
         return {"error": "User not found"}, 404
+    

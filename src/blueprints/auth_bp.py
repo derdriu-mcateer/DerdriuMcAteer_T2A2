@@ -1,13 +1,49 @@
-from setup import db
-from models.educator import Educator
-from models.user import User
-from flask import abort
-from flask_jwt_extended import get_jwt_identity
-from flask import Blueprint
+from setup import db, bcrypt
+from models.educator import Educator, EducatorSchema
+from models.user import User, UserSchema
+from flask import Blueprint, abort, request
+from flask_jwt_extended import get_jwt_identity, create_access_token
+from datetime import timedelta
 
 
+auth_bp = Blueprint("auth", __name__)
 
-auth_bp = Blueprint("logins", __name__, url_prefix="/login")
+@auth_bp.route("/login", methods=["POST"])
+def login():
+    try:
+        # EDUCATOR LOGIN 
+        # Parse incoming POST data through the schema
+        educator_fields = EducatorSchema(only=["email", "password"]).load(request.json)
+        # Select educator from Educator class where the email matches email parsed in POST body
+        stmt = db.select(Educator).where(Educator.email == educator_fields['email'])
+        educator = db.session.scalar(stmt)
+        # Check the password entered in POST body matches password for educator
+        if educator and bcrypt.check_password_hash(educator.password, educator_fields["password"]):
+            # Create token with email as identity
+            token = create_access_token(identity = educator.email, expires_delta=timedelta(hours=5))
+            return {
+                "Success": "Educator Login",
+                "Educator": EducatorSchema(only=["email"]).dump(educator),
+                "token": token  
+            }
+
+        #USER LOGIN
+        user_fields = UserSchema(only=["email", "password"]).load(request.json)
+        # Select user from User class where the email matches email parsed in POST body
+        stmt = db.select(User).where(User.email == user_fields['email'])
+        user = db.session.scalar(stmt)
+        # Check the password entered in POST body matches password for user
+        if user and bcrypt.check_password_hash(user.password, user_fields["password"]):
+            # Create token with email as identity
+            token = create_access_token(identity = user.id, expires_delta=timedelta(hours=5))
+            return {
+                "Success": "User Login",
+                "User": UserSchema(only=["email"]).dump(user),
+                "token": token
+            }
+        return {'error': 'Invalid email address or password'}, 401
+    except KeyError:
+        return {"error": "Email and passsword are required"}, 400
 
 def admin_required():
     jwt_user_id = get_jwt_identity()

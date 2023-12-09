@@ -1,5 +1,6 @@
 from setup import db, ma
 from marshmallow import fields
+
 class User(db.Model):
     # define the table name for the database
     __tablename__ = "users"
@@ -32,3 +33,4 @@ class UserSchema(ma.Schema):
     class Meta:
         ordered = True
         fields = ("id", "email", "password", "name", "d_o_b", "phone_number", "is_admin", "enrolments", "reviews")
+

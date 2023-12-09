@@ -2,7 +2,6 @@ from setup import db
 from flask import Blueprint, request
 from models.course import Course, CourseSchema
 from blueprints.auth_bp import admin_required
-from blueprints.reviews_bp import reviews_bp
 from flask_jwt_extended import jwt_required
 from models.educator import Educator
 
