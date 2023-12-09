@@ -3,9 +3,11 @@ from models.user import User, UserSchema
 from flask import request, Blueprint
 from flask_jwt_extended import jwt_required
 from blueprints.auth_bp import admin_required, admin_or_user
+from blueprints.enrolments_bp import enrolments_bp
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
+users_bp.register_blueprint(enrolments_bp)
 # View all Users (admin auth required)
 @users_bp.route("/", methods=["GET"])
 @jwt_required()
@@ -29,7 +31,7 @@ def single_user(id):
     if user:
         return UserSchema(exclude=["password"]).dump(user)
     else:
-        return {"error": "User not found"}, 404
+        return {"Error": "User not found"}, 404
 
 # Register new User (no auth required)
 @users_bp.route("/register", methods=["POST"])
@@ -63,9 +65,9 @@ def delete_user(id):
         db.session.delete(user)
         db.session.commit()
         # commit session to the database
-        return {"success": "User deleted"}, 200
+        return {"Success": "User deleted"}, 200
     else: 
-        return {"error": "User not found"}, 404
+        return {"Error": "User not found"}, 404
     
 # Update User by ID (admin or user auth required)
 @users_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
@@ -84,7 +86,7 @@ def update_user(id):
         db.session.commit()
         return UserSchema(exclude=["password"]).dump(user)
     else:
-        return {"error": "User not found"}, 404
+        return {"Error": "User not found"}, 404
 
 # Update admin status of user by ID (admin auth required)
 @users_bp.route("/update_admin/7", methods=["PATCH"])
@@ -104,7 +106,7 @@ def update_user_admin_status(id):
             db.session.commit()
             return UserSchema(exclude=["password"]).dump(user), 200
         else:
-            return {"error": "Invalid request. 'is_admin' field not provided."}, 400
+            return {"Error": "Invalid request. 'is_admin' field not provided."}, 400
     else:
-        return {"error": "User not found"}, 404
+        return {"Error": "User not found"}, 404
     

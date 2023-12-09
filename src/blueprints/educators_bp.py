@@ -30,7 +30,7 @@ def single_educator(id):
     if educator:
         return EducatorSchema(exclude=["password"]).dump(educator)
     else:
-        return {"error": "Educator not found"}, 404
+        return {"Error": "Educator not found"}, 404
 
 # Register new Educator (admins auth required)
 @educators_bp.route("/register", methods=["POST"])
@@ -66,9 +66,9 @@ def delete_educator(id):
         db.session.delete(educator)
         # commit session to the database
         db.session.commit()
-        return {"success": "Educator deleted"}, 200
+        return {"Success": "Educator deleted"}, 200
     else: 
-        return {"error": "Educator not found"}, 404
+        return {"Error": "Educator not found"}, 404
 
 
 @educators_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
@@ -88,6 +88,6 @@ def update_educator(id):
         db.session.commit()
         return EducatorSchema(exclude=["password"]).dump(educator)
     else:
-        return {"error": "Educator not found"}, 404
+        return {"Error": "Educator not found"}, 404
 
 

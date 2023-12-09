@@ -4,9 +4,12 @@ from models.course import Course, CourseSchema
 from blueprints.auth_bp import admin_required
 from flask_jwt_extended import jwt_required
 from models.educator import Educator
+from blueprints.reviews_bp import reviews_bp
 
 
 courses_bp = Blueprint("courses", __name__, url_prefix="/courses")
+
+courses_bp.register_blueprint(reviews_bp)
 
 
 # View all Courses (auth required)
@@ -30,7 +33,7 @@ def single_course(id):
     if course:
         return CourseSchema().dump(course)
     else: 
-        return {"error": "Course not found"}, 404
+        return {"Error": "Course not found"}, 404
     
 # Update Course by ID (admin auth required)
 @courses_bp.route("/<int:id>", methods=["PUT", "PATCH"])
@@ -61,7 +64,7 @@ def update_course(id):
         db.session.commit()
         return CourseSchema().dump(course)
     else:
-        return {"error": "Course not found"}, 404
+        return {"Error": "Course not found"}, 404
     
 
 # Delete a Course by ID (admin auth required)
@@ -76,9 +79,9 @@ def delete_course(id):
         db.session.delete(course)
         # commit session to the database
         db.session.commit()
-        return {"success": "Course deleted"}, 200
+        return {"Success": "Course deleted"}, 200
     else: 
-        return {"error": "Course not found"}, 404
+        return {"Error": "Course not found"}, 404
 
 # Update a Course by ID (admin auth required)
 @courses_bp.route("/create", methods=["PUT", "PATCH"])
