@@ -40,6 +40,9 @@ def user_register():
     user = User(
         email = user_fields["email"],
         password = bcrypt.generate_password_hash(user_fields["password"]).decode("utf-8"),
+        name = user_fields["name"],
+        d_o_b = user_fields["d_o_b"],
+        phone_number = user_fields["phone_number"],
     )
     # add instance of User to the database session
     db.session.add(user)
@@ -65,7 +68,7 @@ def delete_user(id):
         return {"error": "User not found"}, 404
     
 # Update User by ID (admin or user auth required)
-@users_bp.route("/<int:id>", methods=["PUT", "PATCH"])
+@users_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user(id):
     admin_or_user(id)
@@ -79,6 +82,28 @@ def update_user(id):
         user.name = user_fields.get("name", user.name)
         user.phone_number = user_fields.get("phone_number", user.phone_number)
         db.session.commit()
-        return UserSchema().dump(user)
+        return UserSchema(exclude=["password"]).dump(user)
+    else:
+        return {"error": "User not found"}, 404
+
+# Update admin status of user by ID (admin auth required)
+@users_bp.route("/update_admin/7", methods=["PATCH"])
+@jwt_required()
+def update_user_admin_status(id):
+    # Retrieve the user by user_id
+    user_fields = UserSchema().load(request.json)  
+    stmt = db.select(User).where(User.id == id)
+    user = db.session.scalar(stmt)
+    
+    if user:
+        admin_required()
+        # Update the is_admin status based on the request data
+        new_admin = user_fields.get("is_admin")
+        if new_admin is not None:
+            user.is_admin = new_admin
+            db.session.commit()
+            return UserSchema(exclude=["password"]).dump(user), 200
+        else:
+            return {"error": "Invalid request. 'is_admin' field not provided."}, 400
     else:
         return {"error": "User not found"}, 404

@@ -2,11 +2,13 @@ from setup import db
 from flask import Blueprint, request
 from models.course import Course, CourseSchema
 from blueprints.auth_bp import admin_required
+from blueprints.reviews_bp import reviews_bp
 from flask_jwt_extended import jwt_required
 from models.educator import Educator
 
 
 courses_bp = Blueprint("courses", __name__, url_prefix="/courses")
+
 
 # View all Courses (auth required)
 @courses_bp.route("/", methods=["GET"])
@@ -63,7 +65,7 @@ def update_course(id):
         return {"error": "Course not found"}, 404
     
 
-# Delete a Course by ID (admins auth required)
+# Delete a Course by ID (admin auth required)
 @courses_bp.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_course(id):
@@ -79,13 +81,13 @@ def delete_course(id):
     else: 
         return {"error": "Course not found"}, 404
 
+# Update a Course by ID (admin auth required)
 @courses_bp.route("/create", methods=["PUT", "PATCH"])
 @jwt_required()
 def create_course():
     admin_required()
     # Load course information from the request (JSON format) using CourseSchema
     course_fields = CourseSchema().load(request.json)  
-
 
     educator_id = course_fields.get("educator_id")
     if educator_id:
@@ -103,7 +105,6 @@ def create_course():
 
     if educator_id:
         course.educator = educator
-
 
     db.session.add(course)  
     db.session.commit()
