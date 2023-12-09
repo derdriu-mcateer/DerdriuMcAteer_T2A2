@@ -89,7 +89,7 @@ def update_user(id):
         return {"Error": "User not found"}, 404
 
 # Update admin status of user by ID (admin auth required)
-@users_bp.route("/update_admin/7", methods=["PATCH"])
+@users_bp.route("/update_admin/<int:id>", methods=["PATCH"])
 @jwt_required()
 def update_user_admin_status(id):
     # Retrieve the user by user_id
