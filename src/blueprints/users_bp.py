@@ -51,7 +51,7 @@ def user_register():
     # Commit session with new instance to the database
     db.session.commit()
     # return new instance of User (excluding password) 
-    return UserSchema(exclude=["password"]).dump(user), 201
+    return UserSchema(exclude=["password", "is_admin", "enrolments", "reviews"]).dump(user), 201
 
 
 # Delete User by ID (admin or user auth required)
