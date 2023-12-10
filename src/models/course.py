@@ -12,7 +12,6 @@ class Course(db.Model):
     date = db.Column(db.Date, default=datetime.now().strftime('%Y-%m-%d'))
     description = db.Column(db.String(), nullable=False)
     duration = db.Column(db.String(), nullable=False)
-    capacity = db.Column(db.Integer, default=1)
 
     # Define a column for storing the foreign key referencing the "id" column in the "educators" table
     educator_id = db.Column(db.Integer, db.ForeignKey("educators.id"),nullable=False)
@@ -27,6 +26,12 @@ class Course(db.Model):
 
 # Create the CourseSchema with marshmallow 
 class CourseSchema(ma.Schema):
+    #Validation 
+    title = fields.String(required=True)
+    date = fields.Date(format="%Y-%m-%d")
+    description = fields.String(required=True)
+    duration =fields.String(required=True)
+
     educator_id = fields.Integer()
     educator = fields.Nested("EducatorSchema", only=("name", "email"))
     # Nested field for multiple users
@@ -34,6 +39,7 @@ class CourseSchema(ma.Schema):
     # Nested field for multiple reviews
     reviews = fields.Nested("ReviewSchema", many=True,exclude=["course"])
 
+
     class Meta:
         ordered = True
-        fields = ("id", "title","date", "description", "duration", "capacity","educator_id", "educator", "enrolments", "reviews")
+        fields = ("id", "title","date", "description", "duration","educator_id", "educator", "enrolments", "reviews")

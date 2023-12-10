@@ -1,5 +1,6 @@
 from setup import db, ma
 from marshmallow import fields
+from marshmallow.validate import Regexp
 
 class Educator(db.Model):
     # define the table name for the database
@@ -17,6 +18,15 @@ class Educator(db.Model):
 
 # Create the EducatorSchema with marshmallow 
 class EducatorSchema(ma.Schema):
+    #Validation
+    email = fields.Email(required=True)
+    password = fields.String(required=True, validate=(
+        Regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9]{8,}$", 
+            error="Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.")))
+    d_o_b = fields.Date(format="%Y-%m-%d")
+    phone_number = fields.String(required=True, validate=(
+        Regexp("^[0-9]{10}$", error="Phone number should contain exactly 10 numbers.")))
+    
     # Nested field for multiple courses
     courses = fields.Nested("CourseSchema", many=True, only= ("id", "title"))
     class Meta:

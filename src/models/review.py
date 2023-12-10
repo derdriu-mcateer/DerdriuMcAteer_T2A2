@@ -7,7 +7,7 @@ class Review(db.Model):
     __tablename__= "reviews"
     
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.Text(), nullable=False)
+    description = db.Column(db.String(250), nullable=False)
  
     # Define a column for storing the foreign key referencing the "id" column in the "users" table
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
@@ -22,6 +22,7 @@ class Review(db.Model):
 
 # Create the CourseSchema with marshmallow 
 class ReviewSchema(ma.Schema):
+    description = fields.String(required=True)
     user = fields.Nested("UserSchema", only=["id", "name"])
     course = fields.Nested("CourseSchema", only=["id", "title"])
 

@@ -1,5 +1,6 @@
 from setup import db, ma
 from marshmallow import fields
+from marshmallow.validate import Regexp
 
 class User(db.Model):
     # define the table name for the database
@@ -9,8 +10,8 @@ class User(db.Model):
     email = db.Column(db.String(), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
     name = db.Column(db.String, nullable=False)
-    d_o_b = db.Column(db.Date, default="")
-    phone_number = db.Column(db.String(), nullable=False, unique=True)
+    d_o_b = db.Column(db.Date, default="N/A")
+    phone_number = db.Column(db.String(), nullable=False)
     is_admin = db.Column(db.Boolean(), default=False)
     
 
@@ -25,6 +26,15 @@ class User(db.Model):
 
 # Create the UserSchema with marshmallow 
 class UserSchema(ma.Schema):
+    #Validation
+    email = fields.Email(required=True)
+    password = fields.String(required=True, validate=(
+        Regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9]{8,}$", 
+            error="Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.")))
+    d_o_b = fields.Date(format="%Y-%m-%d")
+    phone_number = fields.String(required=True, validate=(
+        Regexp("^[0-9]{10}$", error="Phone number should contain exactly 10 numbers.")))
+    
     # Nested field for multiple enrolments
     enrolments = fields.Nested("EnrolmentSchema", many=True, only=["course"])
     # Nested field for multiple reviews

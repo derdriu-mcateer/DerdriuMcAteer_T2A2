@@ -49,7 +49,6 @@ def update_course(id):
         course.date = course_fields.get("date", course.date)
         course.description = course_fields.get("description", course.description)
         course.duration = course_fields.get("duration", course.duration)
-        course.capacity = course_fields.get("capacity", course.capacity)
         
         # Update the educator if the "educator_id" is provided in the JSON
         educator_id = course_fields.get("educator_id")
@@ -102,7 +101,6 @@ def create_course():
         date = course_fields["date"],
         description = course_fields["description"],
         duration = course_fields["duration"],
-        capacity = course_fields["capacity"],
     )
 
     if educator_id:
