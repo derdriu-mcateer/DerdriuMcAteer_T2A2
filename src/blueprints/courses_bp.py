@@ -36,7 +36,7 @@ def single_course(id):
         return {"Error": "Course not found"}, 404
     
 # Update Course by ID (admin auth required)
-@courses_bp.route("/<int:id>", methods=["PUT", "PATCH"])
+@courses_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_course(id):
     admin_required()
@@ -82,8 +82,8 @@ def delete_course(id):
     else: 
         return {"Error": "Course not found"}, 404
 
-# Update a Course by ID (admin auth required)
-@courses_bp.route("/create", methods=["PUT", "PATCH"])
+# Create a course (admin auth required)
+@courses_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_course():
     admin_required()

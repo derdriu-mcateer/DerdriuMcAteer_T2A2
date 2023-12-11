@@ -27,12 +27,12 @@ class User(db.Model):
 # Create the UserSchema with marshmallow 
 class UserSchema(ma.Schema):
     #Validation
-    email = fields.Email(required=True)
-    password = fields.String(required=True, validate=(
+    email = fields.Email()
+    password = fields.String(validate=(
         Regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9]{8,}$", 
             error="Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.")))
     d_o_b = fields.Date(format="%Y-%m-%d")
-    phone_number = fields.String(required=True, validate=(
+    phone_number = fields.String(validate=(
         Regexp("^[0-9]{10}$", error="Phone number should contain exactly 10 numbers.")))
     
     # Nested field for multiple enrolments

@@ -8,6 +8,7 @@ from blueprints.enrolments_bp import enrolments_bp
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 users_bp.register_blueprint(enrolments_bp)
+
 # View all Users (admin auth required)
 @users_bp.route("/", methods=["GET"])
 @jwt_required()
@@ -84,12 +85,12 @@ def update_user(id):
         user.name = user_fields.get("name", user.name)
         user.phone_number = user_fields.get("phone_number", user.phone_number)
         db.session.commit()
-        return UserSchema(exclude=["password"]).dump(user)
+        return UserSchema(exclude=["password"]).dump(user), 200
     else:
         return {"Error": "User not found"}, 404
 
 # Update admin status of user by ID (admin auth required)
-@users_bp.route("/update_admin/<int:id>", methods=["PATCH"])
+@users_bp.route("/update_admin/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user_admin_status(id):
     # Retrieve the user by user_id

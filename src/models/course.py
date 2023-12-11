@@ -39,7 +39,6 @@ class CourseSchema(ma.Schema):
     # Nested field for multiple reviews
     reviews = fields.Nested("ReviewSchema", many=True,exclude=["course"])
 
-
     class Meta:
         ordered = True
         fields = ("id", "title","date", "description", "duration","educator_id", "educator", "enrolments", "reviews")

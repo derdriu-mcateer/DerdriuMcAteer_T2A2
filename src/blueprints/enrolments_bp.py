@@ -10,7 +10,7 @@ from models.enrolment import Enrolment
 enrolments_bp = Blueprint("enrolments", __name__, url_prefix="/<int:user_id>/enrolments")
 
 # Enrol User into Course
-@enrolments_bp.route("<int:course_id>", methods=["PUT"])
+@enrolments_bp.route("<int:course_id>", methods=["POST"])
 @jwt_required()
 def enrol_user(course_id, user_id):
     admin_or_user(user_id)
