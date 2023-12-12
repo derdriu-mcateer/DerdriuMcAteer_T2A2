@@ -1,4 +1,4 @@
-from setup import db, bcrypt
+from config import db, bcrypt
 from models.educator import Educator, EducatorSchema
 from models.user import User, UserSchema
 from flask import Blueprint, abort, request
@@ -25,6 +25,7 @@ def login():
                 "Educator": EducatorSchema(only=["email"]).dump(educator),
                 "token": token  
             }
+        
         #USER LOGIN
         user_fields = UserSchema(only=["email", "password"]).load(request.json)
         # Select user from User class where the email matches email parsed in POST body
@@ -32,7 +33,7 @@ def login():
         user = db.session.scalar(stmt)
         # Check the password entered in POST body matches password for user
         if user and bcrypt.check_password_hash(user.password, user_fields["password"]):
-            # Create token with email as identity
+            # Create token with id as identity
             token = create_access_token(identity = user.id, expires_delta=timedelta(hours=5))
             return {
                 "Success": "User Login",
@@ -40,11 +41,12 @@ def login():
                 "token": token
             }
         return {'Error': 'Invalid email address or password'}, 401
+    
     except KeyError:
         return {"Error": "Email and passsword are required"}, 400
 
 # Admin only function 
-def admin_required():
+def admin_only():
     jwt_user_id = get_jwt_identity()
     stmt = db.select(User).filter_by(id=jwt_user_id)
     user = db.session.scalar(stmt)
@@ -54,10 +56,9 @@ def admin_required():
 # Admin or current user function 
 def admin_or_user(id):
     jwt_id = get_jwt_identity()
-
     user_query = db.select(User).filter_by(id=jwt_id)
     user = db.session.scalar(user_query)
-    # If logged in user is neither admin nor user with id matching identity  abort
+    # If logged in user is neither admin nor user with id matching identity abort
     if not (
         (user and user.is_admin) or (id and (jwt_id == id))
     ):
@@ -76,7 +77,7 @@ def admin_or_educator(id):
     else:  # Assume the identity is an email (Educator)
         educator_query = db.select(Educator).filter_by(email=jwt_identity)
         educator = db.session.scalar(educator_query)
-    # If logged in user is neither admin nor educator with id matching identity  abort
+    # If logged in user is neither admin nor educator with id matching identity then abort
     if not (
         (user and user.is_admin) or (educator and (educator.id == id))
     ):

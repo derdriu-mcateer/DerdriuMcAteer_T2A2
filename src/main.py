@@ -1,4 +1,4 @@
-from setup import app
+from config import app
 
 from blueprints.cli_bp import db_commands
 from blueprints.courses_bp import courses_bp

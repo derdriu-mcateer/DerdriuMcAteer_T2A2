@@ -1,4 +1,4 @@
-from setup import db, ma
+from config import db, ma
 from marshmallow import fields
 
 

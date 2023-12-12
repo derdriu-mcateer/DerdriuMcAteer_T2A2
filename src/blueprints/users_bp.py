@@ -1,8 +1,8 @@
-from setup import db, bcrypt
+from config import db, bcrypt
 from models.user import User, UserSchema
 from flask import request, Blueprint
-from flask_jwt_extended import jwt_required
-from blueprints.auth_bp import admin_required, admin_or_user
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from blueprints.auth_bp import admin_only, admin_or_user
 from blueprints.enrolments_bp import enrolments_bp
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
@@ -13,7 +13,7 @@ users_bp.register_blueprint(enrolments_bp)
 @users_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_all_users():
-    admin_required()
+    admin_only()
     # select all User instances from class User
     stmt = db.select(User)
     # execture the stmt to retrieve scalar users and return them as a list
@@ -71,7 +71,7 @@ def delete_user(id):
         return {"Error": "User not found"}, 404
     
 # Update User by ID (admin or user auth required)
-@users_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
+@users_bp.route("/<int:id>/update", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user(id):
     admin_or_user(id)
@@ -81,16 +81,23 @@ def update_user(id):
     user = db.session.scalar(stmt)
     if user:
         user.email = user_fields.get("email", user.email)
-        user.password = user_fields.get("password", user.password)
         user.name = user_fields.get("name", user.name)
         user.phone_number = user_fields.get("phone_number", user.phone_number)
+        user.d_o_b = user_fields.get("d_o_b", user.d_o_b)
+
+        current_user_id = get_jwt_identity()
+        if user_fields.get("password"):
+            if current_user_id == id:
+                user.password = bcrypt.generate_password_hash(user_fields.get("password")).decode("utf-8")
+            else:
+                return {"error": "Only the user associated with this account can update the password"}, 403
         db.session.commit()
         return UserSchema(exclude=["password"]).dump(user), 200
     else:
         return {"Error": "User not found"}, 404
+    
 
-# Update admin status of user by ID (admin auth required)
-@users_bp.route("/update_admin/<int:id>", methods=["PUT", "PATCH"])
+@users_bp.route("/<int:id>/update_admin", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user_admin_status(id):
     # Retrieve the user by user_id
@@ -99,7 +106,7 @@ def update_user_admin_status(id):
     user = db.session.scalar(stmt)
     
     if user:
-        admin_required()
+        admin_only()
         # Update the is_admin status based on the request data
         new_admin = user_fields.get("is_admin")
         if new_admin is not None:

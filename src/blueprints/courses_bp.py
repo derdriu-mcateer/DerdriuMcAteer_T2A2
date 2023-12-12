@@ -1,7 +1,7 @@
-from setup import db
+from config import db
 from flask import Blueprint, request
 from models.course import Course, CourseSchema
-from blueprints.auth_bp import admin_required
+from blueprints.auth_bp import admin_only
 from flask_jwt_extended import jwt_required
 from models.educator import Educator
 from blueprints.reviews_bp import reviews_bp
@@ -39,7 +39,7 @@ def single_course(id):
 @courses_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_course(id):
-    admin_required()
+    admin_only()
     # Load course information from the request (JSON format) using CourseSchema
     course_fields = CourseSchema().load(request.json)  
     stmt = db.select(Course).where(Course.id == id)
@@ -49,6 +49,7 @@ def update_course(id):
         course.date = course_fields.get("date", course.date)
         course.description = course_fields.get("description", course.description)
         course.duration = course_fields.get("duration", course.duration)
+        course.capacity = course_fields.get("capacity", course.capacity)
         
         # Update the educator if the "educator_id" is provided in the JSON
         educator_id = course_fields.get("educator_id")
@@ -70,7 +71,7 @@ def update_course(id):
 @courses_bp.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_course(id):
-    admin_required()
+    admin_only()
     stmt = db.select(Course).where(Course.id == id)
     course = db.session.scalar(stmt)
     if course:
@@ -86,7 +87,7 @@ def delete_course(id):
 @courses_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_course():
-    admin_required()
+    admin_only()
     # Load course information from the request (JSON format) using CourseSchema
     course_fields = CourseSchema().load(request.json)  
 
@@ -101,6 +102,7 @@ def create_course():
         date = course_fields["date"],
         description = course_fields["description"],
         duration = course_fields["duration"],
+        capacity = course_fields["capacity"],
     )
 
     if educator_id:
@@ -108,7 +110,7 @@ def create_course():
 
     db.session.add(course)  
     db.session.commit()
-    return CourseSchema().dump(course)
+    return CourseSchema().dump(course), 201
   
 
 

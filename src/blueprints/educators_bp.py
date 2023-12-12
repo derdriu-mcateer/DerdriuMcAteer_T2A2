@@ -1,8 +1,8 @@
-from setup import db, bcrypt
+from config import db, bcrypt
 from models.educator import Educator, EducatorSchema
-from blueprints.auth_bp import admin_required, admin_or_educator
+from blueprints.auth_bp import admin_only, admin_or_educator
 from flask import request, Blueprint
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 educators_bp = Blueprint("educators", __name__, url_prefix="/educators")
@@ -11,7 +11,7 @@ educators_bp = Blueprint("educators", __name__, url_prefix="/educators")
 @educators_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_all_educators():
-    admin_required()
+    admin_only()
     # select all educator instances from class Educator
     stmt = db.select(Educator)
     # execture the stmt to retrieve scalar educators and return them as a list
@@ -36,7 +36,7 @@ def single_educator(id):
 @educators_bp.route("/register", methods=["POST"])
 @jwt_required()
 def educator_register():
-    admin_required()
+    admin_only()
     # Load educator information from the request (JSON format) using EducatorSchema
     educator_fields = EducatorSchema().load(request.json)
     # Create a new Educator instance from the loaded JSON information
@@ -58,7 +58,7 @@ def educator_register():
 @educators_bp.route("/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_educator(id):
-    admin_required()
+    admin_only()
     stmt = db.select(Educator).where(Educator.id == id)
     educator = db.session.scalar(stmt)
     if educator:
@@ -85,6 +85,14 @@ def update_educator(id):
         educator.name = educator_fields.get("name", educator.name)
         educator.phone_number = educator_fields.get("phone_number", educator.phone_number)
         educator.d_o_b = educator_fields.get("d_o_b", educator.d_o_b)
+
+        current_educator_id = get_jwt_identity()
+        if educator_fields.get("password"):
+            if current_educator_id == id:
+                educator.password = bcrypt.generate_password_hash(educator_fields.get("password")).decode("utf-8")
+            else:
+                return {"error": "Only the user associated with this account can update the password"}, 403
+
         db.session.commit()
         return EducatorSchema(exclude=["password"]).dump(educator)
     else:

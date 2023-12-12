@@ -1,4 +1,4 @@
-from setup import db
+from config import db
 from flask import Blueprint
 from flask_jwt_extended import jwt_required
 from blueprints.auth_bp import admin_or_user
@@ -24,15 +24,21 @@ def enrol_user(course_id, user_id):
     if course is None:
         return {"Error": "Course not found"}, 404
     
+    if course.capacity:
+        current_capacity = len(course.enrolments)
+        if current_capacity >= course.capacity:
+            return {"Error": "This course is full."}, 400
+    
     if Enrolment.query.filter_by(user=user, course=course).first():
         return {"Error": "User already enrolled in the course"}, 400
+    
 
     # Create an Enrolment object and associate it with the user and course
     enrolment = Enrolment(user=user, course=course)
     db.session.add(enrolment)
     db.session.commit()
 
-    return {"Success": "User enrolled in the course"}, 200
+    return {"Success": "User enrolled in the course"}, 201
 
 # Unenrol User into Course
 @enrolments_bp.route("<int:course_id>", methods=["DELETE"])

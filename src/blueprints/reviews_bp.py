@@ -1,4 +1,4 @@
-from setup import db
+from config import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from blueprints.auth_bp import admin_or_user
 from flask import Blueprint, request
@@ -17,7 +17,7 @@ def new_review(course_id):
         db.session.commit()
         return ReviewSchema().dump(review), 201
     except:
-        return {"Error": "Educators cannot create reviews"}
+        return {"Error": "Educators cannot create reviews"}, 403
     
 # Update a review
 @reviews_bp.route("/<int:review_id>", methods=["PUT", "PATCH"])
@@ -30,7 +30,7 @@ def update_review(course_id, review_id):
         admin_or_user(review.user_id)
         review.description = review_fields.get("description", review.description)
         db.session.commit()
-        return ReviewSchema().dump(review)
+        return ReviewSchema().dump(review), 200
     else:
         return {"Error": "Review not found"}, 404
     

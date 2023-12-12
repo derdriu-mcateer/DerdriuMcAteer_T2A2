@@ -1,4 +1,4 @@
-from setup import db, ma
+from config import db, ma
 from marshmallow import fields
 
 # Course class inherits from db.Model allowing it to map objects to corresponding db tables
@@ -22,6 +22,8 @@ class Review(db.Model):
 
 # Create the CourseSchema with marshmallow 
 class ReviewSchema(ma.Schema):
+    user_id = fields.Integer()
+    course_id = fields.Integer()
     description = fields.String(required=True)
     user = fields.Nested("UserSchema", only=["id", "name"])
     course = fields.Nested("CourseSchema", only=["id", "title"])

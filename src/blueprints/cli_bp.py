@@ -1,4 +1,4 @@
-from setup import db, bcrypt
+from config import db, bcrypt
 from flask import Blueprint
 from models.course import Course
 from models.educator import Educator
@@ -194,7 +194,7 @@ def seed_db():
         ),
 
         Enrolment(
-            course_id = courses[1].id,
+            course_id = courses[5].id,
             user_id= users[2].id
         ),
 

@@ -1,4 +1,4 @@
-from setup import db, ma
+from config import db, ma
 from datetime import datetime
 from marshmallow import fields
 
@@ -12,6 +12,7 @@ class Course(db.Model):
     date = db.Column(db.Date, default=datetime.now().strftime('%Y-%m-%d'))
     description = db.Column(db.String(), nullable=False)
     duration = db.Column(db.String(), nullable=False)
+    capacity = db.Column(db.Integer, default=1)
 
     # Define a column for storing the foreign key referencing the "id" column in the "educators" table
     educator_id = db.Column(db.Integer, db.ForeignKey("educators.id"),nullable=False)
@@ -41,4 +42,4 @@ class CourseSchema(ma.Schema):
 
     class Meta:
         ordered = True
-        fields = ("id", "title","date", "description", "duration","educator_id", "educator", "enrolments", "reviews")
+        fields = ("id", "title","date", "description", "capacity", "duration","educator_id", "educator", "enrolments", "reviews")
