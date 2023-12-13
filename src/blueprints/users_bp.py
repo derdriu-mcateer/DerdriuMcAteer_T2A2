@@ -100,13 +100,13 @@ def update_user(id):
 @users_bp.route("/<int:id>/update_admin", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user_admin_status(id):
+    admin_only()
     # Retrieve the user by user_id
     user_fields = UserSchema().load(request.json)  
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
     
     if user:
-        admin_only()
         # Update the is_admin status based on the request data
         new_admin = user_fields.get("is_admin")
         if new_admin is not None:

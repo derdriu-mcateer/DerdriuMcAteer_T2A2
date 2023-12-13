@@ -10,11 +10,11 @@ class Educator(db.Model):
     email = db.Column(db.String(), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
     name = db.Column(db.String, nullable=False)
-    d_o_b = db.Column(db.Date, default="")
+    d_o_b = db.Column(db.Date, default="N/A")
     phone_number = db.Column(db.String(), nullable=False, unique=True)
     
     # Define a relationship with the "Course" model, linking "educator" and "courses"
-    courses = db.relationship("Course", back_populates="educator", cascade="all, delete")
+    courses = db.relationship("Course", back_populates="educator")
 
 # Create the EducatorSchema with marshmallow 
 class EducatorSchema(ma.Schema):

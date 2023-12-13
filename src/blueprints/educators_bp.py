@@ -54,22 +54,6 @@ def educator_register():
     # return new instance of Educator (excluding password)
     return EducatorSchema(exclude=["password"]).dump(educator), 201
 
-# Delete Educator by ID (admins auth required)
-@educators_bp.route("/<int:id>", methods=["DELETE"])
-@jwt_required()
-def delete_educator(id):
-    admin_only()
-    stmt = db.select(Educator).where(Educator.id == id)
-    educator = db.session.scalar(stmt)
-    if educator:
-        # delete the educator from the database session
-        db.session.delete(educator)
-        # commit session to the database
-        db.session.commit()
-        return {"Success": "Educator deleted"}, 200
-    else: 
-        return {"Error": "Educator not found"}, 404
-
 
 @educators_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
@@ -98,4 +82,21 @@ def update_educator(id):
     else:
         return {"Error": "Educator not found"}, 404
 
+# Delete Educator by ID (admins auth required)
+@educators_bp.route("/<int:id>", methods=["DELETE"])
+@jwt_required()
+def delete_educator(id):
+    admin_only()
+    stmt = db.select(Educator).where(Educator.id == id)
+    educator = db.session.scalar(stmt)
+    if educator:
+        if educator.courses:
+            return {"Error": "Unable to delete the educator as associated courses exist. Reassign or remove the educator from courses before deletion."}, 409
+        # delete the educator from the database session
+        db.session.delete(educator)
+        # commit session to the database
+        db.session.commit()
+        return {"Success": "Educator deleted"}, 200
+    else: 
+        return {"Error": "Educator not found"}, 404
 

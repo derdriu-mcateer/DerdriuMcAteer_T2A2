@@ -35,6 +35,36 @@ def single_course(id):
     else: 
         return {"Error": "Course not found"}, 404
     
+# Create a course (admin auth required)
+@courses_bp.route("/", methods=["POST"])
+@jwt_required()
+def create_course():
+    admin_only()
+    # Load course information from the request (JSON format) using CourseSchema
+    course_fields = CourseSchema().load(request.json)  
+
+    educator_id = course_fields.get("educator_id")
+    if educator_id:
+        educator = Educator.query.get(educator_id)
+        if not educator:
+            return {"Error": "Invalid Educator ID"}, 400
+   
+    course = Course(
+        title = course_fields["title"],
+        date = course_fields["date"],
+        description = course_fields["description"],
+        duration = course_fields["duration"],
+        capacity = course_fields["capacity"],
+    )
+
+    if educator_id:
+        course.educator = educator
+
+    db.session.add(course)  
+    db.session.commit()
+    return CourseSchema().dump(course), 201
+  
+    
 # Update Course by ID (admin auth required)
 @courses_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
@@ -83,35 +113,7 @@ def delete_course(id):
     else: 
         return {"Error": "Course not found"}, 404
 
-# Create a course (admin auth required)
-@courses_bp.route("/", methods=["POST"])
-@jwt_required()
-def create_course():
-    admin_only()
-    # Load course information from the request (JSON format) using CourseSchema
-    course_fields = CourseSchema().load(request.json)  
 
-    educator_id = course_fields.get("educator_id")
-    if educator_id:
-        educator = Educator.query.get(educator_id)
-        if not educator:
-            return {"Error": "Invalid Educator ID"}, 400
-   
-    course = Course(
-        title = course_fields["title"],
-        date = course_fields["date"],
-        description = course_fields["description"],
-        duration = course_fields["duration"],
-        capacity = course_fields["capacity"],
-    )
-
-    if educator_id:
-        course.educator = educator
-
-    db.session.add(course)  
-    db.session.commit()
-    return CourseSchema().dump(course), 201
-  
 
 
     

@@ -12,7 +12,7 @@ class Course(db.Model):
     date = db.Column(db.Date, default=datetime.now().strftime('%Y-%m-%d'))
     description = db.Column(db.String(), nullable=False)
     duration = db.Column(db.String(), nullable=False)
-    capacity = db.Column(db.Integer, default=1)
+    capacity = db.Column(db.Integer, default=10)
 
     # Define a column for storing the foreign key referencing the "id" column in the "educators" table
     educator_id = db.Column(db.Integer, db.ForeignKey("educators.id"),nullable=False)
