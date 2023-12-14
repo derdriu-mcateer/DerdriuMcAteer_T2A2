@@ -76,7 +76,8 @@ def delete_user(id):
 def update_user(id):
     admin_or_user(id)
     # Load user information from the request (JSON format) using UserSchema
-    user_fields = UserSchema().load(request.json)  
+    user_fields = UserSchema().load(request.json) 
+    # Retrieve the user by user_id 
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
     if user:
@@ -86,6 +87,7 @@ def update_user(id):
         user.d_o_b = user_fields.get("d_o_b", user.d_o_b)
 
         current_user_id = get_jwt_identity()
+        # Only user associated with the account can update the password
         if user_fields.get("password"):
             if current_user_id == id:
                 user.password = bcrypt.generate_password_hash(user_fields.get("password")).decode("utf-8")
@@ -96,7 +98,7 @@ def update_user(id):
     else:
         return {"Error": "User not found"}, 404
     
-
+# Update admin status of a user (admin auth required)
 @users_bp.route("/<int:id>/update_admin", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_user_admin_status(id):

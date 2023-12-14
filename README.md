@@ -12,6 +12,7 @@
 ### [R8 Describe your projects models in terms of the relationships they have with each other](#r8-describe-your-projects-models-in-terms-of-the-relationships-they-have-with-each-other)
 ### [R9 Discuss the database relations to be implemented in your application](#r9-discuss-the-database-relations-to-be-implemented-in-your-application)
 ### [R10 Describe the way tasks are allocated and tracked in your project](#r10-describe-the-way-tasks-are-allocated-and-tracked-in-your-project)
+### [Refrences](#refrences)
 
 
 ## GitHub Repository
@@ -309,7 +310,9 @@ Performance: ORM optimises data retrieval and access by minimising database call
 ## R8 Describe your projects models in terms of the relationships they have with each other
 ### User Model
 
-The user model represents a user of the application. It has two relationships, a ONE to MANY relationship with Enrolments where one user can have many enrolments but one enrolment can only have one user. The second relationship is a ONE to MANY with the Review model where one user can have many reviews but each review can only be associated with one user.  
+The user model represents a user of the application. It has two relationships: 
+  - A `ONE to MANY` relationship with Enrolments where one user can have many enrolments but one enrolment can only have one user. 
+  - A `ONE to MANY` relationship with the Review model where one user can have many reviews but each review can only be associated with one user.  
 ```python
 class User(db.Model):
 
@@ -343,7 +346,10 @@ class User(db.Model):
 
 
 ### Course Model
-The course model represents a course within the application. The course model has a ONE TO MANY relationship with the Educator model. Where an educator can have multiple courses but a course can only have a single educator.The course model has a ONE TO MANY relationship with the Enrolment model The course model has a ONE TO MANY relationship with the Review model
+The course model represents a course within the application. It has three relationships:
+  - A `ONE TO MANY` relationship with the Educator model, where an course can have one educator but an educator can have multiple courses. 
+  - A `ONE TO MANY` relationship with the Enrolment model, where an enrolment can have one course but a course can have multiple enrolments
+  - A `ONE TO MANY` relationship with the Review model, where a review can be associated with one course but a course can have multiple reviews 
 
 ```python
 class Course(db.Model):
@@ -373,14 +379,15 @@ class Course(db.Model):
 | capacity = db.Column(db.Integer, default=10) | This integer represents the number of enrolments a course can have. It will default to 10 if not provided |
 | educator_id = db.Column(db.Integer, db.ForeignKey("educators.id"),nullable=False) | The course model creates a column labled educator_id which represents a foreign key constraint that references the id column within the educators table. |
 | educator = db.relationship("Educator", back_populates="courses") | The educator attribute defines the relationship between the Course model and the Educator model. It allows access to the an educator object associated with a course and is set up to work in conjunction with the `back_populates` parameter in the Educator model. |
-| enrolments = db.relationship("Enrolment", back_populates="course", cascade="all, delete") | This attribute specifies that a course can have multiple enrolments. It allows access to an enrolment object associated with a course and is set up to work in conjunction with the `back_populates` paramtered in the Enrolment model. The cascade="all, delete" parameter means that when a course is deleted, all associated enrolments will also be deleted (ensuring referential integrity). |
-| reviews = db.relationship("Review", back_populates="course", cascade="all, delete") | This attribute denotes that a course can have multiple reviews associated with it. This model uses `back_populates` to refer to the corresponding relationship in the Review model. Similarly to the above relationship, the `cascade ="all, delete"` parameter ensures that when a course is deleted, all linked reviews will also be deleted.  |
+| enrolments = db.relationship("Enrolment", back_populates="course", cascade="all, delete") | This attribute allows access to an enrolment object associated with a course and is set up to work in conjunction with the `back_populates` paramter in the Enrolment model. The cascade="all, delete" parameter means that when a course is deleted, all associated enrolments will also be deleted (ensuring referential integrity). |
+| reviews = db.relationship("Review", back_populates="course", cascade="all, delete") | This attribute uses `back_populates` to refer to the corresponding relationship in the Review model. Similarly to the above relationship, the `cascade ="all, delete"` parameter ensures that when a course is deleted, all linked reviews will also be deleted.  |
 
 
 
 
 ### Educator Model
-The educator model represents the educator who will teach the course within the application. The Educator model has a ONE TO MANY relationship with Course model , where an educator can have multiple courses but each course can only have one educator.
+The educator model represents the educator who will teach the course within the application. It has one relationship:
+  - A `ONE TO MANY` relationship with the Course model, where an educator can have multiple courses but each course can only have one educator.
 ```python
 class Educator(db.Model):
     __tablename__ = "educators"
@@ -409,7 +416,9 @@ class Educator(db.Model):
 
 
 ### Enrolment Model
-The enrolment model represents a user's enrollment into a course within the applicatin. The Enrolment model has a ONE TO MANY relationship with the User model, where an enrolment can have one user but a user can have multiple enrolments.
+The enrolment model represents a user's enrollment into a course within the applicatin. It has two relationships:
+  - A `ONE TO MANY` relationship with the User model, where an enrolment can have one user but a user can have multiple enrolments.
+  - A `ONE TO MANY` relationship with the Course model, where an enrolment can have one course but a course can have multiple enrolments. 
 ```python
 class Enrolment(db.Model):
     __tablename__ = 'enrolments'
@@ -433,7 +442,9 @@ class Enrolment(db.Model):
 
 
 ### Review Model
-The review model represents a user's reviews of a course within the applicatin. It has two relationships; it has a ONE to MANY relationship with User where a user can have many reivews but a review can only have one user associated with it. This model also has a ONE to MANY relationship with the Course model where a course can have many reivews but a review can only be associated with one course. 
+The review model represents a user's reviews of a course within the applicatin. It has two relationships:
+- A `ONE to MANY` relationship with User where a user can have many reivews but a review can only have one user associated with it.
+- A `ONE to MANY` relationship with the Course model where a course can have many reivews but a review can only be associated with one course. 
 
 ```python
 class Review(db.Model):
@@ -531,3 +542,27 @@ Below are `A FEW` progress screenshots during the development of the API applica
 
 As well as Trello for porject management I used GitHub for version control and code management. With over 20 commits, GitHub facilitated efficient collaboration by maintaining version history and aiding in code organisation.  
 
+## References
+Abba, I. V. (2022, October 21). What is an ORM – The Meaning of Object Relational Mapping Database Tools. FreeCodeCamp.org. https://www.freecodecamp.org/news/what-is-an-orm-the-meaning-of-object-relational-mapping-database-tools/
+
+Boltic. (n.d.). PostgreSQL vs MySQL: Critical Differences. Www.boltic.io. https://www.boltic.io/blog/postgresql-performance-vs-mysql
+
+Dhruv, S. (2019, May 15). Pros and Cons of using PostgreSQL for Application Development. Aalpha. https://www.aalpha.net/blog/pros-and-cons-of-using-postgresql-for-application-development/
+
+Gori, R. (2020, January 24). Using SQLAlchemy with Flask and PostgreSQL. Stack Abuse. https://stackabuse.com/using-sqlalchemy-with-flask-and-postgresql/
+
+Juba, S., & Volkov, A. (2019). Learning PostgreSQL 11: A beginner’s guide to building high-performance PostgreSQL database solutions, 3rd Edition. In Google Books. Packt Publishing Ltd. https://books.google.com.au/books?hl=en&lr=&id=ZtOGDwAAQBAJ&oi=fnd&pg=PP1&dq=disadvantages+of+postgresql&ots=GF1PIe79Nx&sig=EKGy_G3oLZL7bULSnM6dIQ3OjvA#v=onepage&q=disadvantages%20of%20postgresql&f=false
+
+Kanade, V. (2023, June 9). Object-Relational Mapping’s Working and Importance. Spiceworks. https://www.spiceworks.com/tech/data-management/articles/what-is-orm-a-comprehensive-guide-to-object-relational-mapping/
+
+Krebs, B. (2017, November 9). SQLAlchemy ORM Tutorial for Python Developers. Auth0 - Blog. https://auth0.com/blog/sqlalchemy-orm-tutorial-for-python-developers/
+
+Liang, M. (2021, March 11). Understanding Object-Relational Mapping: Pros, Cons, and Types. AltexSoft. https://www.altexsoft.com/blog/object-relational-mapping/
+
+Nemesis, P. C. (2023, March 28). Database queries in Python — SQLAlchemy-PostGRESQl. Technology Hits. https://medium.com/technology-hits/database-queries-in-python-sqlalchemy-postgresql-e90afe0a06b4
+
+PythonBasics. (2021). What is Flask Python - Python Tutorial. Pythonbasics.org. https://pythonbasics.org/what-is-flask-python/
+
+Rahman, M. N. (2020, August 27). Flask with SQLAlchemy & Marshmallow. Craftsmen — Software Maestros. https://medium.com/craftsmenltd/flask-with-sqlalchemy-marshmallow-2ec34ecfd9d4
+
+Rathore, S. S. (2023, August 27). Mastering CRUD Operations with SQLAlchemy: A Comprehensive Guide. Medium. https://medium.com/@shubhkarmanrathore/mastering-crud-operations-with-sqlalchemy-a-comprehensive-guide-a05cf70e5dea

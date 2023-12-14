@@ -6,12 +6,14 @@ from models.review import Review, ReviewSchema
 
 reviews_bp = Blueprint("reviews", __name__, url_prefix ="/<int:course_id>/reviews")
 
-# Create a new review
+# Create a new review (auth required)
 @reviews_bp.route("/", methods=['POST'])
 @jwt_required()
 def new_review(course_id):
     try:
+        # Load course information from the request (JSON format) using ReviewSchema
         review_fields = ReviewSchema(only=["description"]).load(request.json)
+        # Create new instance of Review class
         review = Review(description = review_fields["description"], user_id=get_jwt_identity(), course_id=course_id)
         db.session.add(review)
         db.session.commit()
@@ -19,7 +21,7 @@ def new_review(course_id):
     except:
         return {"Error": "Educators cannot create reviews"}, 403
     
-# Update a review
+# Update a review (admin or user auth required)
 @reviews_bp.route("/<int:review_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_review(course_id, review_id):
@@ -34,10 +36,11 @@ def update_review(course_id, review_id):
     else:
         return {"Error": "Review not found"}, 404
     
-# Delete a review
+# Delete a review (admin or user auth required)
 @reviews_bp.route("/<int:review_id>", methods=["DELETE"])
 @jwt_required()
 def delete_review(course_id,review_id):
+    # Check review ID is in the Review class
     stmt = db.select(Review).filter_by(id=review_id)
     review = db.session.scalar(stmt)
     if review:

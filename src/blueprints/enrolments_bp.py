@@ -9,7 +9,7 @@ from models.enrolment import Enrolment
 
 enrolments_bp = Blueprint("enrolments", __name__, url_prefix="/<int:user_id>/enrolments")
 
-# Enrol User into Course
+# Enrol User into Course (admin or user auth required)
 @enrolments_bp.route("<int:course_id>", methods=["POST"])
 @jwt_required()
 def enrol_user(course_id, user_id):
@@ -39,7 +39,7 @@ def enrol_user(course_id, user_id):
 
     return {"Success": "User enrolled in the course"}, 201
 
-# Unenrol User into Course
+# Unenrol User out of Course (admin or user auth required)
 @enrolments_bp.route("<int:course_id>", methods=["DELETE"])
 @jwt_required()
 def unenrol_user(course_id, user_id):

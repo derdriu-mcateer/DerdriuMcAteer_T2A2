@@ -54,7 +54,7 @@ def educator_register():
     # return new instance of Educator (excluding password)
     return EducatorSchema(exclude=["password"]).dump(educator), 201
 
-
+# Update educator by ID (admin)
 @educators_bp.route("/update/<int:id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_educator(id):
@@ -76,7 +76,7 @@ def update_educator(id):
                 educator.password = bcrypt.generate_password_hash(educator_fields.get("password")).decode("utf-8")
             else:
                 return {"error": "Only the user associated with this account can update the password"}, 403
-
+        # Commit updated session to database
         db.session.commit()
         return EducatorSchema(exclude=["password"]).dump(educator)
     else:

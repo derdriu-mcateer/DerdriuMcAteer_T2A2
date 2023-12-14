@@ -18,7 +18,6 @@ courses_bp.register_blueprint(reviews_bp)
 def get_courses():
     # select all course entries from class Course
     stmt = db.select(Course)
-    # execture the stmt to retrieve scalar courses and return them as a list
     courses = db.session.scalars(stmt).all()
     # return CourseSchema with courses converted to JSON format
     return CourseSchema(many=True).dump(courses)
@@ -43,6 +42,7 @@ def create_course():
     # Load course information from the request (JSON format) using CourseSchema
     course_fields = CourseSchema().load(request.json)  
 
+    # Check if the educator provided is a valid educator in the database 
     educator_id = course_fields.get("educator_id")
     if educator_id:
         educator = Educator.query.get(educator_id)
@@ -55,10 +55,8 @@ def create_course():
         description = course_fields["description"],
         duration = course_fields["duration"],
         capacity = course_fields["capacity"],
+        educator = educator
     )
-
-    if educator_id:
-        course.educator = educator
 
     db.session.add(course)  
     db.session.commit()
@@ -84,12 +82,12 @@ def update_course(id):
         # Update the educator if the "educator_id" is provided in the JSON
         educator_id = course_fields.get("educator_id")
         if educator_id:
+            # Check educator id is a valid educator in the database
             educator = Educator.query.get(educator_id)
             if educator:
                 course.educator = educator
             else:
                 return {"Error": "Invalid Educator ID"}, 400
-
        
         db.session.commit()
         return CourseSchema().dump(course)
