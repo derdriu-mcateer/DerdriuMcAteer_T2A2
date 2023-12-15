@@ -40,8 +40,8 @@ ORM simplifies CRUD operations by providing easy-to-use, object-oriented methods
 
 |  |  |
 | ----------- | ----------- |
-| Create | ORM streamlines the creation of new database records by providing methods that allow developers to instantiate new objects, set their attributes, and persist them to the database. For example, in Python's SQLAlchemy, creating a new object representing a database record and adding it to the session can be as simple as creating an instance of a mapped class and using the session's add() method. (Rathore, 2023) |
-| Read | Retrieving data from the database becomes more intuitive with ORM. Instead of writing complex SQL queries, developers can use methods provided by the ORM framework to fetch records based on specific criteria, retrieve single or multiple objects, or even navigate relationships between objects. This simplifies querying by using object-oriented interfaces, making it easier to fetch data without directly dealing with SQL syntax.(Kanade, 2023) |
+| Create | ORM streamlines the creation of new database records by providing methods that allow developers to instantiate new objects, set their attributes, and integrate them to the database. For example, in Python's SQLAlchemy, creating a new object representing a database record and adding it to the session can be as simple as creating an instance of a mapped class and using the session's add() method. (Rathore, 2023) |
+| Read | Instead of writing complex SQL queries, developers can use methods provided by the ORM framework to fetch records based on specific criteria, retrieve single or multiple objects, or even navigate relationships between objects. This simplifies querying by using object-oriented interfaces, making it easier to fetch data without directly dealing with SQL syntax.(Kanade, 2023) |
 | Update | ORM frameworks often offer methods to modify existing database records effortlessly. Developers can manipulate object attributes directly, and upon committing changes, the ORM handles the necessary SQL statements to update the corresponding records in the database. This approach allows for a more natural way of updating data, as developers work with objects similar to regular programming objects. (Rathore, 2023) |
 | Delete | ORM frameworks provide methods to remove objects from the database, deleting corresponding records. By simply calling a method or function within the framework, developers can delete objects without explicitly crafting SQL delete statements, enhancing the simplicity and readability of the code.(Kanade, 2023) |
 
@@ -56,8 +56,10 @@ ORM abstracts away intricate SQL operations, simplifying code structures and mai
 #### Code reusability: 
 ORM decouples application logic from specific databases, allowing the same codebase to seamlessly function across various database systems, reducing redundancy and fostering modular code design.(Liang, 2021)
 #### Security: 
-ORM systems come equipped with built-in security measures, safeguarding against common vulnerabilities like SQL injection by automating input sanitization and enabling fine-grained access controls.(Kanade, 2023)
-Performance: ORM optimises data retrieval and access by minimising database calls, utilising caching mechanisms, and generating efficient SQL statements, thereby enhancing application performance and reducing latency.(Kanade, 2023)
+ORM systems come equipped with built-in security measures, safeguarding against common vulnerabilities like SQL injection by automating input sanitisation and enabling access controls.(Kanade, 2023)
+
+#### Performance: 
+ORM optimises data retrieval and access by minimising database calls, utilising caching mechanisms, and generating efficient SQL statements, thereby enhancing application performance and reducing latency.(Kanade, 2023)
 
 ## R5 Document all endpoints for your API
 
@@ -277,7 +279,24 @@ Performance: ORM optimises data retrieval and access by minimising database call
  ![delete user enrolment](./docs/hoppscotch%20screenshots/:users:id:enrolments:id%20(delete).png)
 
 ## R6 An ERD for your app
+
+Below is a copy of the entity relationsgip diagram which relates to this project. 
+
 ![erd](./docs/images/erd.png)
+
+The relations are users, courses, educators, enrolments and reviews. The relations are dicussed in depth in R9. 
+
+The relationships between the entities are as follows:
+
+| Entity One | Relationship  | Entity Two |
+| ----------- | ----------- | ----------- |
+| Users | One to many   | Reviews|
+| Users | One to many   | Enrolments|
+| Courses | One to many | Reviews|
+| Courses | One to many | Enrolments|
+| Educators | One to many | Courses|
+
+
 
 ## R7 Detail any third party services that your app will use
 |  |  |
@@ -285,10 +304,10 @@ Performance: ORM optimises data retrieval and access by minimising database call
 | **PostgreSQL** | PostgreSQL is an open-source relational database management system. (Nemesis, 2023) |
 | **SQLAlchemy** | SQLAlchemy is a Python-based SQL toolkit and Object-Relational Mapping (ORM) library (Nemesis, 2023) |
 | **Falsk** | Flask is a micro web framework written in Python. (PythonBasics, 2021) Flask applications user SQLAlchemy, to interact with databases. SQLAlchemy abstracts database operations, allowing users to work with databases using Python objects rather than raw SQL queries.|
-| **Marshmallow** | Marshmallow is a Python library that allows serialization and deserialization of complex data types, facilitating the conversion of Python objects into JSON and vice versa.  (Rahman, 2020)|
+| **Marshmallow** | Marshmallow is a Python library that allows serialization and deserialization of complex data types, facilitating the conversion of Python objects into JSON and vice versa.(Rahman, 2020) In this project marshmallow is initialised in the `config.py` file. It is used through the project to define shcemas, serialise data and validate data.|
 | **Psycopg2** | Psycopg2 is a PostgreSQL adapter for Python allowing Python applications to communicate with PostgreSQL databases. It enables Python code to interact, query, and manage PostgreSQL databases by translating Python commands into PostgreSQL's native SQL language. (PythonBasics, 2021) |
-| **Bcrypt** | Bcrypt is a cryptographic hashing function primarily used for securely hashing passwords. It is used within the cli blueprint to hash the stored password for the users and educators instances. It is also used within the educator and user blueprints to hash the password for newly registered users/educators.     |
-| **JWT Manager** | JWTManager is an extension that simplifies the handling of JSON Web Tokens (JWTs) within Flask applications. With the auth blueprint the create_access_token() token is used to generate an access token for a specified user identity. Throughout the project jwt_required() is used to protect routes, ensuring that access is only granted to requests containing valid access tokens. Get_jwt_identity() is also frequenly used in the blueprints to retrieves the identity (eg. ID or email) from the current access token. This function is often used to get the identity of the authenticated user.   |
+| **Bcrypt** | Bcrypt is a cryptographic hashing function primarily used for securely hashing passwords. In this project the generate_password_hash() function from Bcrypt is used within `cli_bp.py` to hash the stored password for the users and educators instances. It is also used within the `educators_bp` & `users_bp` to hash the password for newly registered users/educators.     |
+| **JWT Manager** | JWTManager is an extension that simplifies the handling of JSON Web Tokens (JWTs) within Flask applications. Within `auth_bp.py` the create_access_token() token is used to generate an access token for a specified user identity. Throughout the project jwt_required() is used to protect routes, ensuring that access is only granted to requests containing valid access tokens. Get_jwt_identity() is also frequenly used in the blueprints to retrieves the identity (eg. ID or email) from the current access token. This function is often used to get the identity of the authenticated user.   |
 |
 
 
@@ -455,6 +474,9 @@ class Review(db.Model):
 | course = db.relationship("Course", back_populates="reviews") | Each Review object has an associated Course object, and this relationship can be accessed via the course attribute in the Review model. The `back_populates` argument defines the relationship from the Review side back to the Course model. |
 
 ## R9 Discuss the database relations to be implemented in your application
+
+Please note that the entity relationship diagram can be loacted in R6. This provides a visual aid to the below explainations of the relations within this database.
+
 ### Users
 Below is an example of a populated users table as represented in PostgreSQL. 
 
@@ -512,6 +534,12 @@ My board consisted of 5 categoies:
   - This category is for tasks that would be great to execute but are not vital to the final product 
 
 Individual tasks are represented by cards on the trello board. Each task has an appropriate title and description. And for some tasks/ideas I found it best to use checklists within certain cards to help break the tasks up into more manageable components. As well as this I utilised colour coded lables within the cards to help identify importance of certain tasks and to help recognise which tasks belonged to which aspects of the project. I found these labels extremely helpful in terms of time management as it allowed me to visually identify which tasks were most difficult. 
+
+I started this project by adding in the cards which related to the marking rubric and then I added the cards which related to the models and schemas. I then added in the cards for the blueprints. Within most of the cards I kept checklists which esentially acted as mini tasks to complete in order to complete the entired card.
+i then added cards relating to authentication, validation and error handling. Some cards did get added to the board at a later stage as the project developed and more functionality was required. 
+
+Through the course of the project I did update cards frequently to reflect descisions made in regards to the project. I checked and updated the trello almost every day and sometime multiple times a day. I also referred back to the ERD frequently and updated that to reflect the trello and the project. 
+
 
 To view the trello board, please follow this [link](https://trello.com/b/Q8UNFyib/t2a2-api-web-server)
 
