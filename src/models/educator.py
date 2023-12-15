@@ -1,6 +1,6 @@
 from config import db, ma
 from marshmallow import fields
-from marshmallow.validate import Regexp
+from marshmallow.validate import Regexp, Length
 
 class Educator(db.Model):
     # define the table name for the database
@@ -19,6 +19,7 @@ class Educator(db.Model):
 # Create the EducatorSchema with marshmallow 
 class EducatorSchema(ma.Schema):
     #Validation
+    name = fields.String(validate=Length(min=1), required=True)
     email = fields.Email()
     password = fields.String(validate=(
         Regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9]{8,}$", 

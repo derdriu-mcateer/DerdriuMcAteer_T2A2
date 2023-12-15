@@ -44,8 +44,13 @@ def login():
 
 # Admin only authentication 
 def admin_only():
-    jwt_user_id = get_jwt_identity()
-    stmt = db.select(User).filter_by(id=jwt_user_id)
+    jwt_id = get_jwt_identity()
+
+    #If id is string (educator) then abort
+    if isinstance(jwt_id, str):
+            abort(401)
+    
+    stmt = db.select(User).filter_by(id=jwt_id)
     user = db.session.scalar(stmt)
     if not (user and user.is_admin):
         abort(401)
@@ -53,6 +58,11 @@ def admin_only():
 # Admin or current user authentication 
 def admin_or_user(id):
     jwt_id = get_jwt_identity()
+
+    #If id is string (educator) then abort
+    if isinstance(jwt_id, str):
+            abort(401)
+    
     user_query = db.select(User).filter_by(id=jwt_id)
     user = db.session.scalar(user_query)
     # If logged in user is neither admin nor user with id matching identity abort

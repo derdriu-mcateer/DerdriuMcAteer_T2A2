@@ -60,7 +60,7 @@ def educator_register():
 def update_educator(id):
     admin_or_educator(id)
     # Load educator information from the request (JSON format) using UserSchema
-    educator_fields = EducatorSchema().load(request.json)  
+    educator_fields = EducatorSchema(partial=True).load(request.json)  
     stmt = db.select(Educator).where(Educator.id == id)
     educator = db.session.scalar(stmt)
     if educator:

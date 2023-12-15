@@ -1,6 +1,6 @@
 from config import db, ma
 from marshmallow import fields
-from marshmallow.validate import Regexp
+from marshmallow.validate import Regexp, Length
 
 class User(db.Model):
     # define the table name for the database
@@ -27,7 +27,8 @@ class User(db.Model):
 # Create the UserSchema with marshmallow 
 class UserSchema(ma.Schema):
     #Validation
-    email = fields.Email()
+    name = fields.String(validate=Length(min=1), required=True)
+    email = fields.Email(required=True)
     password = fields.String(validate=(
         Regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[A-Za-z0-9]{8,}$", 
             error="Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.")))

@@ -69,7 +69,7 @@ def create_course():
 def update_course(id):
     admin_only()
     # Load course information from the request (JSON format) using CourseSchema
-    course_fields = CourseSchema().load(request.json)  
+    course_fields = CourseSchema(partial=True).load(request.json)  
     stmt = db.select(Course).where(Course.id == id)
     course = db.session.scalar(stmt)
     if course:

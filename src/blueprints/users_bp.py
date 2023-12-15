@@ -76,7 +76,7 @@ def delete_user(id):
 def update_user(id):
     admin_or_user(id)
     # Load user information from the request (JSON format) using UserSchema
-    user_fields = UserSchema().load(request.json) 
+    user_fields = UserSchema(partial=True).load(request.json) 
     # Retrieve the user by user_id 
     stmt = db.select(User).where(User.id == id)
     user = db.session.scalar(stmt)
