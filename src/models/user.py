@@ -22,8 +22,6 @@ class User(db.Model):
     reviews = db.relationship("Review", back_populates="user", cascade="all, delete")
 
 
-
-
 # Create the UserSchema with marshmallow 
 class UserSchema(ma.Schema):
     #Validation

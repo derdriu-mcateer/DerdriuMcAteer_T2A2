@@ -42,6 +42,8 @@ def login():
     return {'Error': 'Invalid email address or password'}, 401
     
 
+## AUTHENTICATION  
+
 # Admin only authentication 
 def admin_only():
     jwt_id = get_jwt_identity()
