@@ -8,6 +8,7 @@ from datetime import timedelta
 
 auth_bp = Blueprint("auth", __name__)
 
+# Login route for users and educators (no auth required)
 @auth_bp.route("/login", methods=["POST"])
 def login():
     # EDUCATOR LOGIN 
